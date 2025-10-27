@@ -90,6 +90,28 @@ document.addEventListener('DOMContentLoaded', function() {
   // 이벤트 리스너 등록
   bookConsultationBtn.addEventListener('click', handleBookConsultation);
   restartChatBtn.addEventListener('click', resetChat);
+  
+  // 모달 이벤트 리스너
+  document.getElementById('success-close').addEventListener('click', function() {
+    hideModal('success-modal');
+  });
+
+  document.getElementById('error-close').addEventListener('click', function() {
+    hideModal('error-modal');
+  });
+
+  document.getElementById('network-close').addEventListener('click', function() {
+    hideModal('network-modal');
+  });
+
+  // 모달 배경 클릭 시 닫기
+  ['success-modal', 'error-modal', 'network-modal'].forEach(modalId => {
+    document.getElementById(modalId).addEventListener('click', function(e) {
+      if (e.target === this) {
+        hideModal(modalId);
+      }
+    });
+  });
 });
 
 // 질문 표시
@@ -321,6 +343,33 @@ function showResult(result) {
   resultModal.classList.remove('hidden');
 }
 
+// 모달 관련 함수들
+function showSuccessModal() {
+  const modal = document.getElementById('success-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('modal-show');
+}
+
+function showErrorModal(message = '상담 예약 중 오류가 발생했습니다.') {
+  const modal = document.getElementById('error-modal');
+  const messageElement = document.getElementById('error-message');
+  messageElement.textContent = message;
+  modal.classList.remove('hidden');
+  modal.classList.add('modal-show');
+}
+
+function showNetworkModal() {
+  const modal = document.getElementById('network-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('modal-show');
+}
+
+function hideModal(modalId) {
+  const modal = document.getElementById(modalId);
+  modal.classList.add('hidden');
+  modal.classList.remove('modal-show');
+}
+
 // 상담 예약 처리
 async function handleBookConsultation() {
   const name = prompt('이름을 입력해주세요:');
@@ -347,14 +396,14 @@ async function handleBookConsultation() {
     });
     
     if (response.ok) {
-      alert('상담 예약이 완료되었습니다! 곧 연락드리겠습니다.');
+      showSuccessModal();
       resultModal.classList.add('hidden');
     } else {
-      alert('상담 예약 중 오류가 발생했습니다.');
+      showErrorModal('상담 예약 중 오류가 발생했습니다.');
     }
   } catch (error) {
     console.error('상담 예약 오류:', error);
-    alert('상담 예약 중 오류가 발생했습니다.');
+    showErrorModal('상담 예약 중 오류가 발생했습니다.');
   }
 }
 
@@ -401,5 +450,5 @@ window.addEventListener('online', function() {
 
 window.addEventListener('offline', function() {
   console.log('네트워크 연결 끊김');
-  alert('네트워크 연결이 끊어졌습니다. 연결을 확인해주세요.');
+    showNetworkModal();
 });

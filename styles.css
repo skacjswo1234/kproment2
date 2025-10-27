@@ -694,36 +694,27 @@ body {
   background-color: rgba(26, 31, 46, 0.95);
 }
 
-/* Scrollbar Styling - Enhanced for Mobile */
-::-webkit-scrollbar {
-  width: 6px;
-}
+/* Terminal Colors */
+.bg-terminal-green\/20 { background-color: rgba(0, 255, 0, 0.2); }
+.text-terminal-green { color: var(--terminal-green); }
+.border-terminal-green { border-color: var(--terminal-green); }
+.bg-terminal-green\/10 { background-color: rgba(0, 255, 0, 0.1); }
+.hover\:bg-terminal-green:hover { background-color: var(--terminal-green); }
+.hover\:text-white:hover { color: white; }
+.hover\:shadow-glow:hover { box-shadow: 0 0 10px rgba(0, 255, 0, 0.4); }
 
-::-webkit-scrollbar-track {
-  background: var(--card);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--terminal-green);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--terminal-blue);
-}
-
-/* Mobile scrollbar optimization */
-@media (max-width: 639px) {
-  ::-webkit-scrollbar {
-    width: 4px;
+/* Modal Animations */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
   }
-  
-  ::-webkit-scrollbar-thumb {
-    background: var(--terminal-green);
-    border-radius: 2px;
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--terminal-blue);
-  }
+}
+
+.modal-show {
+  animation: modalFadeIn 0.3s ease-out;
 }
