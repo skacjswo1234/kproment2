@@ -7,7 +7,7 @@ name = "allinpay-loan-chat"
 [[d1_databases]]
 binding = "DB"
 database_name = "allinpay-db"
-database_id = "your-database-id-here"
+database_id = "b6b8a9a8-d182-498a-9c41-c86b751e8ee3"
 
 [build]
 command = "echo 'Static site - no build needed'"
