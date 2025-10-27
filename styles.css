@@ -27,8 +27,8 @@ html {
 body {
   background-color: var(--background);
   color: var(--text-primary);
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 /* Header Logo */
@@ -132,9 +132,10 @@ body {
 }
 
 /* Colors - Terminal Theme */
-.text-primary { color: var(--terminal-green); }
-.text-gray-200 { color: #e0e0e0; }
-.text-gray-300 { color: #d0d0d0; }
+.text-primary { color: #ffffff; }
+.text-primary-button { color: var(--terminal-green); }
+.text-gray-200 { color: #ffffff; }
+.text-gray-300 { color: #ffffff; }
 .text-gray-400 { color: #b0b0b0; }
 .text-gray-500 { color: #909090; }
 .text-white { color: white; }
@@ -242,6 +243,8 @@ body {
     max-width: 95%;
     padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
+    max-height: 60vh;
+    overflow-y: auto;
   }
   
   .answer-button {
@@ -261,7 +264,23 @@ body {
   }
   
   .terminal-glow {
-    text-shadow: 0 0 3px var(--terminal-green);
+    /* Glow effect removed for mobile */
+  }
+  
+  /* Mobile chat container optimization */
+  #chat-container {
+    padding: 0.5rem;
+    min-height: calc(100vh - 200px);
+  }
+  
+  /* Mobile header optimization */
+  .sticky.top-0 {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  /* Mobile answer section optimization */
+  .sticky.bottom-0 {
+    padding: 0.75rem;
   }
 }
 
@@ -358,7 +377,7 @@ body {
   }
   
   .terminal-glow {
-    text-shadow: 0 0 8px var(--terminal-green);
+    /* Glow effect removed for desktop */
   }
 }
 
@@ -394,7 +413,7 @@ body {
   }
   
   .terminal-glow {
-    text-shadow: 0 0 12px var(--terminal-green);
+    /* Glow effect removed for large desktop */
   }
   
   .max-w-4xl {
@@ -434,7 +453,7 @@ body {
   }
   
   .terminal-glow {
-    text-shadow: 0 0 15px var(--terminal-green);
+    /* Glow effect removed for ultra wide */
   }
 }
 
@@ -444,10 +463,43 @@ body {
     min-height: 48px;
     font-size: 0.9rem;
     padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
   }
   
   .answer-button:active {
     transform: scale(0.95);
+  }
+  
+  /* Mobile scrollbar styling */
+  #chat-container::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  #chat-container::-webkit-scrollbar-track {
+    background: var(--card);
+  }
+  
+  #chat-container::-webkit-scrollbar-thumb {
+    background: var(--terminal-green);
+    border-radius: 2px;
+  }
+  
+  #chat-container::-webkit-scrollbar-thumb:hover {
+    background: var(--terminal-blue);
+  }
+  
+  /* Mobile answer section scrollbar */
+  .sticky.bottom-0::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .sticky.bottom-0::-webkit-scrollbar-track {
+    background: var(--card);
+  }
+  
+  .sticky.bottom-0::-webkit-scrollbar-thumb {
+    background: var(--terminal-green);
+    border-radius: 2px;
   }
 }
 
@@ -464,6 +516,7 @@ body {
     max-width: 90%;
     padding: 0.4rem 0.6rem;
     font-size: 0.75rem;
+    max-height: 50vh;
   }
   
   .answer-button {
@@ -477,11 +530,16 @@ body {
     height: 1.5rem;
     margin-right: 0.4rem;
   }
+  
+  /* Landscape chat container */
+  #chat-container {
+    min-height: calc(100vh - 120px);
+  }
 }
 
 /* Terminal Glow Effect */
 .terminal-glow {
-  text-shadow: 0 0 5px var(--terminal-green);
+  /* Glow effect removed */
 }
 
 .terminal-border {
@@ -636,7 +694,7 @@ body {
   background-color: rgba(26, 31, 46, 0.95);
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling - Enhanced for Mobile */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -646,10 +704,26 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--terminal-green);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary);
+  background: var(--terminal-blue);
+}
+
+/* Mobile scrollbar optimization */
+@media (max-width: 639px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--terminal-green);
+    border-radius: 2px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--terminal-blue);
+  }
 }

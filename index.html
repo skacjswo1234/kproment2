@@ -28,12 +28,8 @@
     <!-- CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
-<body class="font-sans antialiased h-screen overflow-hidden bg-background">
-    <!-- Header Logo -->
-    <div class="header-logo">
-        <img src="allinpay-logo.png" alt="AllinPay Logo">
-    </div>
-
+<body class="font-sans antialiased min-h-screen bg-background">
+    <div class="flex flex-col min-h-screen">
     <!-- Header with Progress -->
     <div class="sticky top-0 z-10 bg-card border-b border-border shadow-sm terminal-border">
         <div class="max-w-4xl mx-auto">
@@ -72,7 +68,7 @@
     </div>
 
     <!-- Chat Messages -->
-    <div class="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6" id="chat-container">
+    <div class="flex-1 px-3 sm:px-4 py-4 sm:py-6" id="chat-container">
         <div class="max-w-4xl mx-auto space-y-3 sm:space-y-4">
             <!-- Welcome Message -->
             <div class="flex w-full mb-4 fade-in justify-start">
@@ -82,7 +78,7 @@
                     </div>
                     <div class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-primary">AllinPay</span>
-                        <div class="px-4 py-3 rounded-sm shadow-lg bg-card border border-border text-gray-200 chat-bubble assistant terminal-glow">
+                        <div class="px-4 py-3 rounded-sm shadow-lg bg-card border border-border text-white chat-bubble assistant terminal-glow">
                             <p class="text-sm whitespace-pre-wrap leading-relaxed text-left">
 안녕하세요! AllinPay입니다.
 
@@ -108,7 +104,7 @@
                     </div>
                     <div class="flex flex-col gap-1">
                         <span class="text-xs font-medium text-primary">AllinPay</span>
-                        <div class="px-4 py-3 rounded-sm shadow-lg bg-card border border-border text-gray-200 chat-bubble assistant terminal-glow">
+                        <div class="px-4 py-3 rounded-sm shadow-lg bg-card border border-border text-white chat-bubble assistant terminal-glow">
                             <p class="text-sm whitespace-pre-wrap leading-relaxed" id="question-text">
                                 현재 사업자등록증이 없는 예비창업자 이신가요?
                             </p>
@@ -139,7 +135,7 @@
         <div class="bg-card p-6 rounded-sm shadow-xl terminal-border">
             <div class="flex items-center gap-3">
                 <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                <span class="text-gray-200 terminal-glow">상담 결과를 분석 중입니다...</span>
+                <span class="text-white terminal-glow">상담 결과를 분석 중입니다...</span>
             </div>
         </div>
     </div>
@@ -158,15 +154,15 @@
             </div>
             <div class="space-y-4">
                 <div class="px-4 py-3 rounded-sm bg-card border border-border terminal-glow">
-                    <p class="text-sm text-gray-200 whitespace-pre-wrap" id="result-content">
+                    <p class="text-sm text-white whitespace-pre-wrap" id="result-content">
                         <!-- Result content will be inserted here -->
                     </p>
                 </div>
                 <div class="flex gap-2">
-                    <button id="book-consultation" class="flex-1 px-4 py-2 rounded-sm text-sm transition-all duration-200 border border-primary bg-primary/10 text-primary hover:bg-primary hover:text-white hover:shadow-glow active:scale-[0.98] terminal-border">
+                    <button id="book-consultation" class="flex-1 px-4 py-2 rounded-sm text-sm transition-all duration-200 border border-primary bg-primary/10 text-primary-button hover:bg-primary hover:text-white hover:shadow-glow active:scale-[0.98] terminal-border">
                         상담 예약하기
                     </button>
-                    <button id="restart-chat" class="px-4 py-2 rounded-sm text-sm transition-all duration-200 border border-border bg-card text-gray-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary active:scale-[0.98] terminal-border">
+                    <button id="restart-chat" class="px-4 py-2 rounded-sm text-sm transition-all duration-200 border border-border bg-card text-gray-300 hover:border-primary/50 hover:bg-primary/10 hover:text-primary-button active:scale-[0.98] terminal-border">
                         다시 시작
                     </button>
                 </div>
@@ -174,6 +170,7 @@
         </div>
     </div>
 
+    </div>
     <!-- JavaScript -->
     <script src="script.js"></script>
 </body>
