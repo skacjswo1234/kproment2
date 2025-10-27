@@ -16,7 +16,7 @@ export async function onRequestPost(context) {
     const loanConditions = calculateLoanConditions(answers);
     
     // 상담 결과 저장
-    const result = await env.DB.prepare(
+    const result = await env['allinpay-db'].prepare(
       'INSERT INTO consultation_results (session_id, loan_amount_min, loan_amount_max, interest_rate_min, interest_rate_max, approval_probability, recommended_products, consultation_summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     ).bind(
       sessionId,
@@ -30,7 +30,7 @@ export async function onRequestPost(context) {
     ).run();
 
     // 세션 상태 업데이트
-    await env.DB.prepare(
+    await env['allinpay-db'].prepare(
       'UPDATE consultation_sessions SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE session_id = ?'
     ).bind('completed', sessionId).run();
 

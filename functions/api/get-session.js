@@ -13,7 +13,7 @@ export async function onRequestGet(context) {
 
   try {
     // 세션 정보 조회
-    const session = await env.DB.prepare(
+    const session = await env['allinpay-db'].prepare(
       'SELECT * FROM consultation_sessions WHERE session_id = ?'
     ).bind(sessionId).first();
 
@@ -25,17 +25,17 @@ export async function onRequestGet(context) {
     }
 
     // 답변 조회
-    const answers = await env.DB.prepare(
+    const answers = await env['allinpay-db'].prepare(
       'SELECT * FROM user_answers WHERE session_id = ? ORDER BY created_at'
     ).bind(sessionId).all();
 
     // 상담 결과 조회
-    const result = await env.DB.prepare(
+    const result = await env['allinpay-db'].prepare(
       'SELECT * FROM consultation_results WHERE session_id = ?'
     ).bind(sessionId).first();
 
     // 상담 예약 조회
-    const booking = await env.DB.prepare(
+    const booking = await env['allinpay-db'].prepare(
       'SELECT * FROM consultation_bookings WHERE session_id = ?'
     ).bind(sessionId).first();
 
