@@ -144,9 +144,27 @@ function updateProgress() {
   progressText.textContent = `${Math.round(progress)}% 완료`;
 }
 
-// 답변 저장 API 호출
+// 답변 저장 API 호출 (로컬 스토리지 백업)
 async function saveAnswer(questionId, questionText, answerText, answerCategory) {
   try {
+    console.log('=== 답변 저장 시작 ===');
+    console.log('데이터:', { sessionId, questionId, questionText, answerText, answerCategory });
+    
+    // 로컬 스토리지에 먼저 저장
+    const localAnswers = JSON.parse(localStorage.getItem('userAnswers') || '[]');
+    localAnswers.push({
+      sessionId,
+      questionId,
+      questionText,
+      answerText,
+      answerCategory,
+      timestamp: new Date().toISOString()
+    });
+    localStorage.setItem('userAnswers', JSON.stringify(localAnswers));
+    console.log('로컬 스토리지 저장 완료');
+    
+    // API 호출 시도
+    console.log('API 호출 중...');
     const response = await fetch('/api/save-answer', {
       method: 'POST',
       headers: {
@@ -161,11 +179,19 @@ async function saveAnswer(questionId, questionText, answerText, answerCategory) 
       })
     });
     
+    console.log('API 응답 상태:', response.status);
+    
     if (!response.ok) {
-      console.error('답변 저장 실패');
+      const errorText = await response.text();
+      console.error('API 저장 실패:', response.status, errorText);
+      console.warn('로컬 스토리지에 저장됨');
+    } else {
+      const result = await response.json();
+      console.log('API 저장 성공:', result);
     }
   } catch (error) {
-    console.error('답변 저장 오류:', error);
+    console.error('API 오류:', error);
+    console.warn('로컬 스토리지에 저장됨');
   }
 }
 
