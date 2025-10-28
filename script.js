@@ -212,7 +212,7 @@ function showQuestion() {
   // 진행률 업데이트
   updateProgress();
 }
-// 어시스턴트 메시지 버블 추가
+// 어시스턴트 메시지 버블 추가 (왼쪽)
 function appendAssistantMessageBubble(text) {
   if (!messagesList) return;
   const wrapper = document.createElement('div');
@@ -235,15 +235,15 @@ function appendAssistantMessageBubble(text) {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-// 사용자 메시지 버블 추가
+// 사용자 메시지 버블 추가 (오른쪽)
 function appendUserMessageBubble(text) {
   if (!messagesList) return;
   const wrapper = document.createElement('div');
   wrapper.className = 'flex w-full mb-4 fade-in justify-end';
   wrapper.innerHTML = `
-    <div class="flex gap-3 max-w-85 md:max-w-70">
-      <div class="flex flex-col gap-1 ml-auto">
-        <div class="px-4 py-3 rounded-sm shadow-lg bg-terminal-blue text-white chat-bubble user border border-border">
+    <div class="flex gap-3 max-w-85 md:max-w-70 flex-row-reverse">
+      <div class="flex flex-col gap-1">
+        <div class="px-4 py-3 rounded-sm shadow-lg bg-gradient-to-r from-[#00E5DB] to-[#00C7BE] text-gray-900 chat-bubble user border border-border">
           <p class="text-sm whitespace-pre-wrap leading-relaxed text-left">${text}</p>
         </div>
         <span class="text-[10px] text-gray-500 mt-1 text-right">${formatFullTime(new Date())}</span>

@@ -589,10 +589,11 @@ body {
 }
 
 .chat-bubble.user {
-  background-color: var(--terminal-blue);
-  color: white;
+  background: linear-gradient(135deg, #00E5DB, #00C7BE);
+  color: #1a1a3a;
   margin-left: auto;
-  border-right: 3px solid var(--terminal-green);
+  border: 1px solid rgba(0, 229, 219, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 229, 219, 0.2);
 }
 
 .avatar {
