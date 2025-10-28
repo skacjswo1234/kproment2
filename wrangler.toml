@@ -1,13 +1,13 @@
-name = "allinpay-loan-chat"
+name = "kproment2-policy-fund"
 compatibility_date = "2024-01-01"
 
 [env.production]
-name = "allinpay-loan-chat"
+name = "kproment2-policy-fund"
 
 [[d1_databases]]
-binding = "allinpay-db"
-database_name = "allinpay-db"
-database_id = "b6b8a9a8-d182-498a-9c41-c86b751e8ee3"
+binding = "kproment2-db"
+database_name = "kproment2-db"
+database_id = "your-database-id-here"
 
 [build]
 command = "echo 'Static site - no build needed'"

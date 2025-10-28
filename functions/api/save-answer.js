@@ -23,15 +23,15 @@ async function handleRequest(context) {
     console.log('env.DB 존재:', !!env.DB);
     console.log('env.DB 타입:', typeof env.DB);
     
-    // D1 바인딩 확인 - allinpay-db 사용
-    let db = env['allinpay-db'];
-    console.log('allinpay-db 바인딩 존재:', !!db);
+    // D1 바인딩 확인 - kproment2-db 사용
+    let db = env['kproment2-db'];
+    console.log('kproment2-db 바인딩 존재:', !!db);
     
     if (!db) {
-      console.error('allinpay-db 데이터베이스가 바인딩되지 않았습니다!');
+      console.error('kproment2-db 데이터베이스가 바인딩되지 않았습니다!');
       console.log('사용 가능한 env 키들:', Object.keys(env));
       return new Response(JSON.stringify({ 
-        error: 'allinpay-db 데이터베이스가 바인딩되지 않았습니다.',
+        error: 'kproment2-db 데이터베이스가 바인딩되지 않았습니다.',
         availableKeys: Object.keys(env),
         suggestion: 'Cloudflare Pages에서 D1 바인딩을 확인해주세요.'
       }), {

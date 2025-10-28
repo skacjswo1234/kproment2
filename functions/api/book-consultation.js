@@ -13,7 +13,7 @@ export async function onRequestPost(context) {
     }
 
     // 상담 예약 저장
-    const result = await env['allinpay-db'].prepare(
+    const result = await env['kproment2-db'].prepare(
       'INSERT INTO consultation_bookings (session_id, name, phone, email, consultation_type) VALUES (?, ?, ?, ?, ?)'
     ).bind(sessionId, name, phone, email || '', consultationType || 'phone').run();
 

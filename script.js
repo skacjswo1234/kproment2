@@ -2,58 +2,136 @@
 const questions = [
   {
     id: 1,
-    text: "현재 사업자등록증이 없는 예비창업자 이신가요?",
+    text: "1.현재 사업자등록증 없는 예비창업자 이신가요?\n*사업자등록증 없으신 예비창업자가 1억원이상 자금확보 확률이 90%이상,스타트업,초기창업자도 충분한 정부지원 및 신청 가능합니다.",
     options: [
-      "네. 사업자 등록 한적 없습니다",
-      "네. 지금은 폐업해서 사업자가 없어요",
-      "아뇨. 창업 후 3년 미만의 초기창업자입니다",
-      "아뇨. 창업 후 3년 이상의 창업자입니다"
+      "네,사업자 등록 한적없습니다",
+      "네,지금은 폐업해서 사업자가 없습니다.",
+      "아니요.사업자등록 3년 미만 의 초기창업자입니다",
+      "아니요.사업자등록 3년 이상의 사업자입니다."
     ],
     category: "사업자 상태"
   },
   {
     id: 2,
-    text: "희망 대출 금액은 얼마인가요?",
+    text: "2.예비창업제도 정부지원 사업에 대해서 알고 계신가요?",
     options: [
-      "1,000만원 이하",
-      "1,000만원 ~ 3,000만원",
-      "3,000만원 ~ 5,000만원",
-      "5,000만원 이상"
+      "네 잘 알고 있습니다",
+      "들어본 적 있습니다",
+      "지원경험 있습니다",
+      "최종합격 까지 했습니다",
+      "합격해서 지원금 받은적이 있습니다"
     ],
-    category: "대출 금액"
+    category: "정부지원 경험"
   },
   {
     id: 3,
-    text: "현재 월 소득은 얼마인가요?",
+    text: "3.창업생각하는 사업 아이템이 있으신가요?",
     options: [
-      "200만원 이하",
-      "200만원 ~ 400만원",
-      "400만원 ~ 600만원",
-      "600만원 이상"
+      "생각하고있는 아이템 있습니다",
+      "아직 구체적구상 전입니다",
+      "창업준비 아이템이 없어요",
+      "아직 없습니다"
     ],
-    category: "소득 수준"
+    category: "사업 아이템"
   },
   {
     id: 4,
-    text: "신용등급은 어떻게 되시나요?",
+    text: "4.등본상 거주지가 어디 지역인가요?\n*경쟁률이 낮은 지역으로 빠르게 진행가능합니다.",
     options: [
-      "1등급 (900점 이상)",
-      "2등급 (800~899점)",
-      "3등급 (700~799점)",
-      "4등급 이하 (700점 미만)"
+      "서울",
+      "수도권",
+      "충북/천안",
+      "충남/대전",
+      "경북/대구",
+      "경남/부산",
+      "전북/전주",
+      "전남/광주",
+      "강원",
+      "제주/기타"
     ],
-    category: "신용 상태"
+    category: "거주지역"
   },
   {
     id: 5,
-    text: "창업하고자 하는 업종은 무엇인가요?",
+    text: "5.기존 대출이력은 어떻게 되나요?",
     options: [
-      "IT/소프트웨어",
-      "제조업",
-      "서비스업",
+      "총1천만원 미안",
+      "총1천만원 이상~3천만원 미만",
+      "총3천만원 이상~5천만원 미만",
+      "총5천만원 이상~ 1억원 미안",
+      "총1억원 이상"
+    ],
+    category: "대출이력"
+  },
+  {
+    id: 6,
+    text: "6.성별을 선택해주세요\n*여성사업 우대 지원있습니다.",
+    options: [
+      "남성",
+      "여성"
+    ],
+    category: "성별"
+  },
+  {
+    id: 7,
+    text: "7.만 나이를 선택해주세요\n*만39세 이하 정부우대조건 지원사업 기회 많습니다.",
+    options: [
+      "만25세이하",
+      "만30세이하",
+      "만35세이하",
+      "만39세이하",
+      "만39세 이상"
+    ],
+    category: "나이"
+  },
+  {
+    id: 8,
+    text: "8.최종 학력과 전공을 작성해 주세요\n\n예:00대학교 00과",
+    options: [
+      "고등학교 졸업",
+      "전문대학 졸업",
+      "4년제 대학교 졸업",
+      "대학원 졸업",
       "기타"
     ],
-    category: "업종"
+    category: "학력"
+  },
+  {
+    id: 9,
+    text: "9.현재 직업 또는 직업종 분야를 작성해 주세요\n*4대보험 이력이 높을수로 확률이 좋습니다\n\n예:00업 00팀.부서",
+    options: [
+      "사무직",
+      "영업직",
+      "기술직",
+      "서비스업",
+      "제조업",
+      "IT업",
+      "기타"
+    ],
+    category: "직업"
+  },
+  {
+    id: 10,
+    text: "10.성함을 작성해주세요\n\n예:홍길동",
+    options: [
+      "홍길동",
+      "김철수",
+      "이영희",
+      "박민수",
+      "기타"
+    ],
+    category: "성함"
+  },
+  {
+    id: 11,
+    text: "마지막.인증가능한 휴대폰 번호를 입력해주세요.\n답변 검토 후 문자로 결과발표 안내드린 후 추가상담을 원하는 분에 한하여 무료 유선 상담 진행 가능합니다.",
+    options: [
+      "010-1234-5678",
+      "010-9876-5432",
+      "010-5555-7777",
+      "직접 입력"
+    ],
+    category: "휴대폰번호"
   }
 ];
 
@@ -256,63 +334,87 @@ async function generateConsultationResult() {
 
 // 기본 결과 계산 (API 실패 시 사용)
 function calculateDefaultResult() {
-  let loanAmountMin = 1000;
-  let loanAmountMax = 3000;
-  let interestRateMin = 4.5;
-  let interestRateMax = 6.8;
+  let supportAmountMin = 5000;
+  let supportAmountMax = 10000;
   let approvalProbability = 70;
-  let recommendedProducts = ['창업자금 특화 대출'];
+  let recommendedProducts = ['정부지원사업', '창업자금지원', '기술개발지원'];
   
   // 답변에 따른 조건 조정
   const businessStatus = answers[0];
-  if (businessStatus?.includes('사업자 등록 한적 없습니다')) {
-    loanAmountMin = 500;
-    loanAmountMax = 2000;
-    interestRateMin = 5.0;
-    interestRateMax = 7.5;
-    approvalProbability = 60;
+  if (businessStatus?.includes('사업자 등록 한적없습니다')) {
+    supportAmountMin = 3000;
+    supportAmountMax = 5000;
+    approvalProbability = 90; // 예비창업자 우대
+    recommendedProducts = ['예비창업자 지원사업', '스타트업 지원', '정부지원사업'];
   } else if (businessStatus?.includes('3년 미만')) {
-    loanAmountMin = 2000;
-    loanAmountMax = 5000;
-    interestRateMin = 4.0;
-    interestRateMax = 6.0;
-    approvalProbability = 80;
+    supportAmountMin = 5000;
+    supportAmountMax = 10000;
+    approvalProbability = 85;
+    recommendedProducts = ['초기창업자 지원', '정부지원사업', '기술개발지원'];
+  } else if (businessStatus?.includes('3년 이상')) {
+    supportAmountMin = 3000;
+    supportAmountMax = 8000;
+    approvalProbability = 75;
+    recommendedProducts = ['기존사업자 지원', '정부지원사업', '기술혁신지원'];
   }
   
-  const loanAmount = answers[1];
-  if (loanAmount?.includes('5,000만원 이상')) {
-    loanAmountMax = 10000;
-    interestRateMin = 3.5;
-    interestRateMax = 5.5;
-  }
-  
-  const income = answers[2];
-  if (income?.includes('600만원 이상')) {
+  const supportExperience = answers[1];
+  if (supportExperience?.includes('지원경험 있습니다') || supportExperience?.includes('합격해서 지원금 받은적이 있습니다')) {
     approvalProbability += 15;
-    interestRateMin -= 0.5;
-  } else if (income?.includes('200만원 이하')) {
-    approvalProbability -= 20;
-    interestRateMax += 1.0;
+    supportAmountMax += 2000;
+  } else if (supportExperience?.includes('들어본 적 있습니다')) {
+    approvalProbability += 5;
   }
   
-  const creditGrade = answers[3];
-  if (creditGrade?.includes('1등급')) {
-    approvalProbability += 20;
-    interestRateMin -= 1.0;
-    interestRateMax -= 0.5;
-  } else if (creditGrade?.includes('4등급 이하')) {
-    approvalProbability -= 30;
-    interestRateMin += 1.5;
-    interestRateMax += 2.0;
+  const businessItem = answers[2];
+  if (businessItem?.includes('생각하고있는 아이템 있습니다')) {
+    approvalProbability += 10;
+    recommendedProducts.push('아이템개발지원');
+  }
+  
+  const region = answers[3];
+  if (region?.includes('서울') || region?.includes('수도권')) {
+    approvalProbability += 5; // 수도권 우대
+  } else if (region?.includes('제주') || region?.includes('강원')) {
+    approvalProbability += 10; // 지역균형발전 우대
+  }
+  
+  const loanHistory = answers[4];
+  if (loanHistory?.includes('총1천만원 미안')) {
+    approvalProbability += 10; // 대출이력이 적으면 우대
+  } else if (loanHistory?.includes('총1억원 이상')) {
+    approvalProbability -= 15; // 대출이력이 많으면 불리
+  }
+  
+  const gender = answers[5];
+  if (gender?.includes('여성')) {
+    approvalProbability += 10; // 여성사업 우대
+    recommendedProducts.push('여성창업지원');
+  }
+  
+  const age = answers[6];
+  if (age?.includes('만39세이하')) {
+    approvalProbability += 15; // 젊은 창업자 우대
+    recommendedProducts.push('청년창업지원');
+  }
+  
+  const education = answers[7];
+  if (education?.includes('대학원 졸업')) {
+    approvalProbability += 10; // 고학력 우대
+    recommendedProducts.push('고학력창업지원');
+  }
+  
+  const job = answers[8];
+  if (job?.includes('IT업') || job?.includes('기술직')) {
+    approvalProbability += 10; // IT/기술분야 우대
+    recommendedProducts.push('IT기술지원');
   }
   
   approvalProbability = Math.max(30, Math.min(95, approvalProbability));
   
   return {
-    loanAmountMin,
-    loanAmountMax,
-    interestRateMin,
-    interestRateMax,
+    supportAmountMin,
+    supportAmountMax,
     approvalProbability,
     recommendedProducts
   };
@@ -323,20 +425,22 @@ function showResult(result) {
   const resultHtml = `
 감사합니다! 모든 질문에 답변해주셨습니다.
 
-입력해주신 정보를 바탕으로 최적의 대출 상품을 추천해드리겠습니다.
+입력해주신 정보를 바탕으로 정부정책지원 가능 여부와 자금확보 가능성을 분석해드리겠습니다.
 
 📋 <strong>상담 결과 요약:</strong>
-• 대출 가능 금액: ${result.loanAmountMin}만원 ~ ${result.loanAmountMax}만원
-• 예상 금리: 연 ${result.interestRateMin}% ~ ${result.interestRateMax}%
-• 추천 상품: ${result.recommendedProducts.join(', ')}
-• 승인 가능성: ${result.approvalProbability}%
+• 정부지원 가능 금액: ${result.supportAmountMin}만원 ~ ${result.supportAmountMax}만원
+• 지원 확률: ${result.approvalProbability}%
+• 추천 지원사업: ${result.recommendedProducts.join(', ')}
+• 기술특허개발, 제조, IT 시제품개발, 앱웹개발 지원 가능
 
 📞 <strong>다음 단계:</strong>
 • 무료 상담 예약 (전화/대면)
-• 서류 준비 안내
+• 정부지원 서류 준비 안내
 • 1:1 맞춤 상담 진행
 
-추가 문의사항이 있으시면 언제든 연락주세요!
+가능 여부 및 모든 비용적 부분은 답변 검토 후 상담내용을 바탕으로 커스텀 이 되고 비용산출이 되기 때문에 반드시 답변을 주셔야 가능성 여부와 비용부분 안내가 가능합니다.
+
+※입력하신 정보는 보안으로 안전하게 보관되며,순차적 상담 후 노출되지 않게 폐기 처분 합니다.
   `;
   
   resultContent.innerHTML = resultHtml;

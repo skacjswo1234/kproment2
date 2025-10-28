@@ -1,6 +1,6 @@
-# AllinPay - Cloudflare Pages + D1 + Functions
+# 케이프로먼트 - 정책자금 지원 상담 시스템
 
-예비창업자를 위한 최저가 대출 솔루션을 제공하는 채팅 인터페이스 웹사이트입니다.
+예비창업, 기존사업자, 법인사업자 정부정책지원 가능 여부와 자금확보 가능성, 기술특허개발 제조, IT 시제품개발, 앱웹개발을 포함한 토탈 원스톱 솔루션 견적을 제공하는 상담 시스템입니다.
 
 ## 🚀 기술 스택
 
@@ -17,8 +17,8 @@
 - 다크 모드 및 반응형 디자인
 - 부드러운 애니메이션과 진행률 표시
 
-### 🎯 **대출 상담 시스템**
-- 5단계 질문으로 맞춤 대출 조건 계산
+### 🎯 **정책자금 상담 시스템**
+- 11단계 질문으로 맞춤 정부지원 조건 계산
 - 실시간 답변 저장 (D1 데이터베이스)
 - 동적 상담 결과 생성
 
@@ -29,7 +29,7 @@
 
 ### 📞 **상담 예약**
 - 연락처 수집 및 예약 시스템
-- 상담 유형 선택 (전화/대면)
+- 상담 유형 선택 (전화/대면/화상)
 
 ## 🛠️ 설치 및 실행
 
@@ -42,10 +42,10 @@ npm install -g wrangler
 wrangler login
 
 # D1 데이터베이스 생성
-wrangler d1 create allinpay-db
+wrangler d1 create kproment2-db
 
 # 스키마 적용
-wrangler d1 execute allinpay-db --file=./schema.sql
+wrangler d1 execute kproment2-db --file=./schema.sql
 
 # 로컬 개발 서버 실행
 wrangler pages dev
@@ -64,6 +64,9 @@ wrangler pages deploy
 - `user_answers` - 사용자 답변 저장
 - `consultation_results` - 상담 결과 저장
 - `consultation_bookings` - 상담 예약 관리
+- `support_programs` - 정부지원사업 정보
+- `regional_support` - 지역별 지원사업 정보
+- `consultation_stats` - 상담 통계
 
 ## 🔌 API 엔드포인트
 
@@ -84,9 +87,16 @@ wrangler pages deploy
 ## 📱 사용자 경험
 
 1. **환영 메시지** - 서비스 소개 및 안내
-2. **단계별 질문** - 5개 핵심 질문으로 정보 수집
+2. **단계별 질문** - 11개 핵심 질문으로 정보 수집
+   - 사업자 상태 (예비창업자, 초기창업자, 기존사업자)
+   - 정부지원 경험
+   - 사업 아이템 유무
+   - 거주 지역
+   - 대출 이력
+   - 성별, 나이, 학력, 직업
+   - 성함, 휴대폰 번호
 3. **진행률 표시** - 시각적 진행 상황 확인
-4. **상담 결과** - 맞춤 대출 조건 및 추천 상품
+4. **상담 결과** - 맞춤 정부지원 조건 및 추천 사업
 5. **상담 예약** - 추가 상담을 위한 연락처 수집
 
 ## 🔧 커스터마이징
@@ -94,15 +104,15 @@ wrangler pages deploy
 ### 질문 수정
 `script.js`의 `questions` 배열에서 질문과 답변 옵션을 수정할 수 있습니다.
 
-### 대출 조건 로직
-`functions/api/generate-result.js`의 `calculateLoanConditions` 함수에서 대출 조건 계산 로직을 수정할 수 있습니다.
+### 정책자금 조건 로직
+`functions/api/generate-result.js`의 `calculateLoanConditions` 함수에서 정부지원 조건 계산 로직을 수정할 수 있습니다.
 
 ### 스타일 변경
 `styles.css`에서 색상, 애니메이션 등을 커스터마이징할 수 있습니다.
 
 ## 📈 확장 가능성
 
-- **AI 통합**: 더 정교한 대출 조건 계산
+- **AI 통합**: 더 정교한 정부지원 조건 계산
 - **실시간 알림**: 상담 예약 및 결과 알림
 - **관리자 대시보드**: 상담 현황 및 통계 관리
 - **다국어 지원**: 글로벌 서비스 확장
@@ -114,11 +124,12 @@ wrangler pages deploy
 - SQL 인젝션 방지
 - 세션 기반 데이터 격리
 - 개인정보 수집 최소화
+- 순차적 상담 후 데이터 폐기 처리
 
 ## 📁 프로젝트 구조
 
 ```
-allinpay/
+kproment2/
 ├── index.html              # 메인 HTML 파일
 ├── styles.css              # CSS 스타일
 ├── script.js               # JavaScript 로직
@@ -142,7 +153,7 @@ allinpay/
 wrangler pages dev --local
 
 # D1 데이터베이스 로컬 테스트
-wrangler d1 execute allinpay-db --local --file=./schema.sql
+wrangler d1 execute kproment2-db --local --file=./schema.sql
 ```
 
 ### 로그 확인
