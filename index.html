@@ -73,8 +73,8 @@
         <div class="max-w-4xl mx-auto space-y-3 sm:space-y-4">
             <!-- Welcome Message -->
             <div class="flex w-full mb-4 fade-in justify-start">
-                <div class="flex gap-3 max-w-[85%] md:max-w-[70%]">
-                    <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center shadow-lg overflow-hidden bg-card border border-primary/30">
+                <div class="flex gap-3 max-w-85 md:max-w-70">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden bg-card border border-primary/30">
                         <img src="logo.png" alt="케이프로먼트" class="w-full h-full object-cover rounded-full">
                     </div>
                     <div class="flex flex-col gap-1">
@@ -89,15 +89,15 @@
 내부 보안을 위해 사전에 많은정보를 말씀드릴수 없다는 점 이해 부탁드립니다.
                             </p>
                         </div>
-                        <span class="text-[10px] text-gray-500 mt-1">오후 08:10</span>
+                        <span class="text-[10px] text-gray-500 mt-1" id="welcome-time"></span>
                     </div>
                 </div>
             </div>
 
             <!-- Current Question -->
             <div class="flex w-full mb-4 fade-in justify-start" id="current-question">
-                <div class="flex gap-3 max-w-[85%] md:max-w-[70%]">
-                    <div class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center shadow-lg overflow-hidden bg-card border border-primary/30">
+                <div class="flex gap-3 max-w-85 md:max-w-70">
+                    <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden bg-card border border-primary/30">
                         <img src="logo.png" alt="케이프로먼트" class="w-full h-full object-cover rounded-full">
                     </div>
                     <div class="flex flex-col gap-1">
@@ -108,7 +108,7 @@
 *사업자등록증 없으신 예비창업자가 1억원이상 자금확보 확률이 90%이상,스타트업,초기창업자도 충분한 정부지원 및 신청 가능합니다.
                             </p>
                         </div>
-                        <span class="text-[10px] text-gray-500 mt-1">오후 08:10</span>
+                        <span class="text-[10px] text-gray-500 mt-1" id="current-question-time"></span>
                     </div>
                 </div>
             </div>
@@ -141,9 +141,9 @@
 
     <!-- Result Modal -->
     <div id="result-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-card p-6 rounded-sm shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto terminal-border">
+        <div class="bg-card p-6 rounded-sm shadow-xl max-w-2xl w-full mx-4 max-h-80vh overflow-y-auto terminal-border">
             <div class="flex items-center gap-3 mb-4">
-                <div class="w-9 h-9 rounded-sm overflow-hidden terminal-border">
+                <div class="w-16 h-16 rounded-sm overflow-hidden terminal-border">
                     <img src="logo.png" alt="케이프로먼트" class="w-full h-full object-cover">
                 </div>
                 <div>

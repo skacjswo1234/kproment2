@@ -7,7 +7,24 @@ name = "kproment2-policy-fund"
 [[d1_databases]]
 binding = "kproment2-db"
 database_name = "kproment2-db"
-database_id = "your-database-id-here"
+database_id = "59c315f3-954a-45e8-bdfd-7a938c7f65c3"
+
+# KV 네임스페이스 (인증번호 저장용)
+[[kv_namespaces]]
+binding = "VERIFICATION_CODES"
+id = "f575456dd6c94974bfcc2335fc2f34f8"
+preview_id = "f575456dd6c94974bfcc2335fc2f34f8"
+
+[[kv_namespaces]]
+binding = "VERIFIED_PHONES"
+id = "6008086657344849bad9e78411ad05d4"
+preview_id = "6008086657344849bad9e78411ad05d4"
+
+# 환경변수 (솔라피 API 설정)
+[vars]
+SOLAPI_API_KEY = "NCSXSG86GBJ31VDX"
+SOLAPI_API_SECRET = "WIMT8DAV6UTPM9XDG1KDEBINQVB4Z2FT"
+SOLAPI_SENDER = "01098989728"
 
 [build]
 command = "echo 'Static site - no build needed'"

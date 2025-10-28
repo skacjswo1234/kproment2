@@ -31,6 +31,11 @@
 - 연락처 수집 및 예약 시스템
 - 상담 유형 선택 (전화/대면/화상)
 
+### 📱 **휴대폰번호 인증**
+- 솔라피(Solapi) API를 통한 SMS 인증
+- 6자리 인증번호 발송 및 검증
+- 3분 유효시간 및 실시간 타이머
+
 ## 🛠️ 설치 및 실행
 
 ### 로컬 개발
@@ -46,6 +51,15 @@ wrangler d1 create kproment2-db
 
 # 스키마 적용
 wrangler d1 execute kproment2-db --file=./schema.sql
+
+# KV 네임스페이스 생성 (인증번호 저장용)
+wrangler kv:namespace create "VERIFICATION_CODES"
+wrangler kv:namespace create "VERIFIED_PHONES"
+
+# 환경변수 설정 (솔라피 API)
+wrangler secret put SOLAPI_API_KEY
+wrangler secret put SOLAPI_API_SECRET
+wrangler secret put SOLAPI_SENDER
 
 # 로컬 개발 서버 실행
 wrangler pages dev
@@ -76,6 +90,8 @@ wrangler pages deploy
 | POST | `/api/generate-result` | 상담 결과 생성 |
 | POST | `/api/book-consultation` | 상담 예약 |
 | GET | `/api/get-session` | 세션 정보 조회 |
+| POST | `/api/send-verification` | 인증번호 발송 |
+| POST | `/api/verify-code` | 인증번호 검증 |
 
 ## 🎨 디자인 특징
 
@@ -138,7 +154,9 @@ kproment2/
 │       ├── save-answer.js
 │       ├── generate-result.js
 │       ├── book-consultation.js
-│       └── get-session.js
+│       ├── get-session.js
+│       ├── send-verification.js
+│       └── verify-code.js
 ├── schema.sql             # D1 데이터베이스 스키마
 ├── wrangler.toml          # Cloudflare 설정
 ├── DEPLOYMENT.md          # 배포 가이드

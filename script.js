@@ -125,13 +125,9 @@ const questions = [
   {
     id: 11,
     text: "마지막.인증가능한 휴대폰 번호를 입력해주세요.\n답변 검토 후 문자로 결과발표 안내드린 후 추가상담을 원하는 분에 한하여 무료 유선 상담 진행 가능합니다.",
-    options: [
-      "010-1234-5678",
-      "010-9876-5432",
-      "010-5555-7777",
-      "직접 입력"
-    ],
-    category: "휴대폰번호"
+    options: [],
+    category: "휴대폰번호",
+    inputType: "phone"
   }
 ];
 
@@ -161,6 +157,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 총 단계 수 설정
   totalSteps.textContent = questions.length;
+  
+  // 실시간 시간 업데이트 시작
+  startRealtimeClock();
   
   // 첫 번째 질문 표시
   showQuestion();
@@ -199,22 +198,226 @@ function showQuestion() {
   
   // 답변 옵션 생성
   answerOptions.innerHTML = '';
-  question.options.forEach((option, index) => {
-    const button = document.createElement('button');
-    button.className = 'answer-button group';
-    button.innerHTML = `
-      <span>${option}</span>
-      <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m9 18 6-6-6-6"></path>
-      </svg>
-    `;
-    
-    button.addEventListener('click', () => handleAnswer(option));
-    answerOptions.appendChild(button);
-  });
+  
+  // 휴대폰번호 입력인 경우 특별한 UI 생성
+  if (question.inputType === 'phone') {
+    createPhoneInputUI();
+  } else {
+    // 일반 옵션 버튼들 생성
+    question.options.forEach((option, index) => {
+      const button = document.createElement('button');
+      button.className = 'answer-button group';
+      button.innerHTML = `
+        <span>${option}</span>
+        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"></path>
+        </svg>
+      `;
+      
+      button.addEventListener('click', () => handleAnswer(option));
+      answerOptions.appendChild(button);
+    });
+  }
   
   // 진행률 업데이트
   updateProgress();
+}
+
+// 휴대폰번호 입력 UI 생성
+function createPhoneInputUI() {
+  const phoneInputContainer = document.createElement('div');
+  phoneInputContainer.className = 'space-y-4';
+  phoneInputContainer.innerHTML = `
+    <div class="relative">
+      <input 
+        type="tel" 
+        id="phone-input" 
+        placeholder="010-1234-5678" 
+        class="w-full px-4 py-3 rounded-sm bg-card border border-border text-white placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+        maxlength="13"
+      />
+      <button 
+        id="send-verification-btn" 
+        disabled
+        class="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-lg bg-gradient-to-r from-[#00E5DB] to-[#00C7BE] text-gray-900 hover:shadow-[0_0_15px_rgba(0,229,219,0.4)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" 
+        title="인증번호 발송"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send h-4 w-4" aria-hidden="true">
+          <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path>
+          <path d="m21.854 2.147-10.94 10.939"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="verification-section" class="hidden space-y-3">
+      <div class="relative">
+        <input 
+          type="text" 
+          id="verification-code-input" 
+          placeholder="6자리 인증번호를 입력하세요" 
+          class="w-full px-4 py-3 rounded-sm bg-card border border-border text-white placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+          maxlength="6"
+        />
+        <button 
+          id="verify-code-btn" 
+          class="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#00E5DB] to-[#00C7BE] text-gray-900 hover:shadow-[0_0_15px_rgba(0,229,219,0.4)] active:scale-95 transition-all duration-200 text-sm"
+        >
+          인증
+        </button>
+      </div>
+      <div id="verification-status" class="text-sm text-gray-400"></div>
+    </div>
+  `;
+  
+  answerOptions.appendChild(phoneInputContainer);
+  
+  // 이벤트 리스너 등록
+  setupPhoneInputEvents();
+}
+
+// 휴대폰번호 입력 이벤트 설정
+function setupPhoneInputEvents() {
+  const phoneInput = document.getElementById('phone-input');
+  const sendBtn = document.getElementById('send-verification-btn');
+  const verificationSection = document.getElementById('verification-section');
+  const verificationCodeInput = document.getElementById('verification-code-input');
+  const verifyBtn = document.getElementById('verify-code-btn');
+  const verificationStatus = document.getElementById('verification-status');
+  
+  // 휴대폰번호 입력 포맷팅
+  phoneInput.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, ''); // 숫자만 추출
+    if (value.length >= 4) {
+      value = value.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    } else if (value.length >= 3) {
+      value = value.replace(/(\d{3})(\d{0,4})/, '$1-$2');
+    }
+    e.target.value = value;
+    
+    // 발송 버튼 활성화/비활성화
+    sendBtn.disabled = value.length < 13;
+  });
+  
+  // 인증번호 발송
+  sendBtn.addEventListener('click', async function() {
+    const phoneNumber = phoneInput.value.replace(/\D/g, '');
+    if (phoneNumber.length !== 11) {
+      alert('올바른 휴대폰번호를 입력해주세요.');
+      return;
+    }
+    
+    try {
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = `
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+      `;
+      
+      const response = await fetch('/api/send-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId,
+          phoneNumber: phoneNumber
+        })
+      });
+      
+      if (response.ok) {
+        verificationSection.classList.remove('hidden');
+        verificationStatus.textContent = '인증번호가 발송되었습니다.';
+        verificationStatus.className = 'text-sm text-green-400';
+        
+        // 3분 타이머 시작
+        startVerificationTimer();
+      } else {
+        throw new Error('인증번호 발송 실패');
+      }
+    } catch (error) {
+      console.error('인증번호 발송 오류:', error);
+      verificationStatus.textContent = '인증번호 발송에 실패했습니다. 다시 시도해주세요.';
+      verificationStatus.className = 'text-sm text-red-400';
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send h-4 w-4" aria-hidden="true">
+          <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"></path>
+          <path d="m21.854 2.147-10.94 10.939"></path>
+        </svg>
+      `;
+    }
+  });
+  
+  // 인증번호 입력
+  verificationCodeInput.addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/\D/g, ''); // 숫자만 입력
+  });
+  
+  // 인증번호 검증
+  verifyBtn.addEventListener('click', async function() {
+    const code = verificationCodeInput.value;
+    if (code.length !== 6) {
+      alert('6자리 인증번호를 입력해주세요.');
+      return;
+    }
+    
+    try {
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = '인증 중...';
+      
+      const response = await fetch('/api/verify-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sessionId,
+          phoneNumber: phoneInput.value.replace(/\D/g, ''),
+          verificationCode: code
+        })
+      });
+      
+      if (response.ok) {
+        verificationStatus.textContent = '인증이 완료되었습니다!';
+        verificationStatus.className = 'text-sm text-green-400';
+        
+        // 답변 저장 및 다음 단계로 진행
+        setTimeout(() => {
+          handleAnswer(phoneInput.value);
+        }, 1000);
+      } else {
+        const result = await response.json();
+        verificationStatus.textContent = result.message || '인증번호가 올바르지 않습니다.';
+        verificationStatus.className = 'text-sm text-red-400';
+      }
+    } catch (error) {
+      console.error('인증 오류:', error);
+      verificationStatus.textContent = '인증 중 오류가 발생했습니다.';
+      verificationStatus.className = 'text-sm text-red-400';
+    } finally {
+      verifyBtn.disabled = false;
+      verifyBtn.textContent = '인증';
+    }
+  });
+}
+
+// 인증번호 타이머 (3분)
+function startVerificationTimer() {
+  let timeLeft = 180; // 3분
+  const verificationStatus = document.getElementById('verification-status');
+  
+  const timer = setInterval(() => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    verificationStatus.textContent = `인증번호가 발송되었습니다. (${minutes}:${seconds.toString().padStart(2, '0')})`;
+    
+    timeLeft--;
+    
+    if (timeLeft < 0) {
+      clearInterval(timer);
+      verificationStatus.textContent = '인증번호가 만료되었습니다. 다시 발송해주세요.';
+      verificationStatus.className = 'text-sm text-red-400';
+    }
+  }, 1000);
 }
 
 // 답변 처리
@@ -532,6 +735,46 @@ function formatTime(date = new Date()) {
     minute: '2-digit',
     hour12: true 
   });
+}
+
+// 실시간 시간 포맷팅 함수 (년월일시분초)
+function formatFullTime(date = new Date()) {
+  return date.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+  });
+}
+
+// 실시간 시간 업데이트 함수
+function updateRealtimeClock() {
+  const now = new Date();
+  const timeString = formatFullTime(now);
+  
+  // 모든 시간 표시 요소 업데이트
+  const welcomeTimeElement = document.getElementById('welcome-time');
+  const currentQuestionTimeElement = document.getElementById('current-question-time');
+  
+  if (welcomeTimeElement) {
+    welcomeTimeElement.textContent = timeString;
+  }
+  
+  if (currentQuestionTimeElement) {
+    currentQuestionTimeElement.textContent = timeString;
+  }
+}
+
+// 실시간 시간 업데이트 시작
+function startRealtimeClock() {
+  // 즉시 한 번 실행
+  updateRealtimeClock();
+  
+  // 1초마다 업데이트
+  setInterval(updateRealtimeClock, 1000);
 }
 
 function generateSessionId() {

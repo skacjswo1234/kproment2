@@ -83,14 +83,18 @@ body {
 /* Sizing */
 .w-9 { width: 2.25rem; }
 .h-9 { height: 2.25rem; }
+.w-12 { width: 3rem; }
+.h-12 { height: 3rem; }
+.w-16 { width: 4rem; }
+.h-16 { height: 4rem; }
 .w-full { width: 100%; }
 .h-full { height: 100%; }
 .h-screen { height: 100vh; }
 .max-w-2xl { max-width: 42rem; }
 .max-w-4xl { max-width: 56rem; }
-.max-w-[85%] { max-width: 85%; }
-.max-w-[70%] { max-width: 70%; }
-.max-h-[80vh] { max-height: 80vh; }
+.max-w-85 { max-width: 85%; }
+.max-w-70 { max-width: 70%; }
+.max-h-80vh { max-height: 80vh; }
 
 /* Positioning */
 .sticky { position: sticky; }
@@ -254,8 +258,8 @@ body {
   }
   
   .avatar {
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
     margin-right: 0.5rem;
   }
   
@@ -263,9 +267,6 @@ body {
     height: 0.5rem;
   }
   
-  .terminal-glow {
-    /* Glow effect removed for mobile */
-  }
   
   /* Mobile chat container optimization */
   #chat-container {
@@ -336,15 +337,15 @@ body {
   }
   
   .avatar {
-    width: 2rem;
-    height: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
     margin-right: 0.6rem;
   }
 }
 
 /* Desktop (768px - 1279px) */
 @media (min-width: 768px) {
-  .md\:max-w-\[70\%\] { max-width: 70%; }
+  .md\:max-w-70 { max-width: 70%; }
   .md\:flex { display: flex; }
   
   .header-logo {
@@ -367,8 +368,8 @@ body {
   }
   
   .avatar {
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 3rem;
+    height: 3rem;
     margin-right: 0.75rem;
   }
   
@@ -376,9 +377,6 @@ body {
     height: 0.75rem;
   }
   
-  .terminal-glow {
-    /* Glow effect removed for desktop */
-  }
 }
 
 /* Large Desktop (1280px+) */
@@ -403,8 +401,8 @@ body {
   }
   
   .avatar {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
     margin-right: 1rem;
   }
   
@@ -412,9 +410,6 @@ body {
     height: 1rem;
   }
   
-  .terminal-glow {
-    /* Glow effect removed for large desktop */
-  }
   
   .max-w-4xl {
     max-width: 80rem;
@@ -447,14 +442,11 @@ body {
   }
   
   .avatar {
-    width: 3rem;
-    height: 3rem;
+    width: 4rem;
+    height: 4rem;
     margin-right: 1.25rem;
   }
   
-  .terminal-glow {
-    /* Glow effect removed for ultra wide */
-  }
 }
 
 /* Touch-friendly buttons for mobile */
@@ -526,8 +518,8 @@ body {
   }
   
   .avatar {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 2rem;
+    height: 2rem;
     margin-right: 0.4rem;
   }
   
@@ -537,10 +529,6 @@ body {
   }
 }
 
-/* Terminal Glow Effect */
-.terminal-glow {
-  /* Glow effect removed */
-}
 
 .terminal-border {
   border: 1px solid var(--terminal-green);
@@ -608,8 +596,8 @@ body {
 }
 
 .avatar {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 0.25rem;
   background: var(--card);
   border: 1px solid var(--terminal-green);
@@ -717,4 +705,56 @@ body {
 
 .modal-show {
   animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Phone Input Styles */
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
+
+.space-y-3 > * + * {
+  margin-top: 0.75rem;
+}
+
+/* Input focus styles */
+input:focus {
+  outline: none;
+  border-color: var(--terminal-green);
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.2);
+}
+
+/* Verification button styles */
+.verification-btn {
+  background: linear-gradient(135deg, #00E5DB, #00C7BE);
+  color: #1a1a3a;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.verification-btn:hover:not(:disabled) {
+  box-shadow: 0 0 15px rgba(0, 229, 219, 0.4);
+  transform: translateY(-1px);
+}
+
+.verification-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.verification-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Status message styles */
+.text-green-400 {
+  color: #4ade80;
+}
+
+.text-red-400 {
+  color: #f87171;
+}
+
+/* Loading spinner for buttons */
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
