@@ -33,20 +33,20 @@ export async function onRequestPost(context) {
         });
       }
 
-    // 솔라피 API 호출
-    const solapiResponse = await fetch('https://api.solapi.com/messages/v4/send', {
-        method: 'POST',
-        headers: {
-        'Authorization': `HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${new Date().toISOString()}, salt=${Math.random().toString(36).substr(2, 9)}, signature=${await generateSignature(SOLAPI_API_KEY, SOLAPI_API_SECRET)}`,
+    // 솔라피 API 호출 (올바른 형식)
+    const solapiResponse = await fetch('https://api.solapi.com/messages/v4/send-many/detail', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${btoa(SOLAPI_API_KEY + ':' + SOLAPI_API_SECRET)}`,
         'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: {
-            to: phoneNumber,
-            from: SOLAPI_SENDER,
-            text: `[케이프로먼트] 인증번호: ${verificationCode}\n정부정책지원 상담을 위한 인증번호입니다.`
-          }
-        })
+      },
+      body: JSON.stringify({
+        messages: [{
+          to: phoneNumber,
+          from: SOLAPI_SENDER,
+          text: `[케이프로먼트] 인증번호: ${verificationCode}\n정부정책지원 상담을 위한 인증번호입니다.`
+        }]
+      })
     });
 
       if (!solapiResponse.ok) {
@@ -118,23 +118,3 @@ export async function onRequestOptions(context) {
   });
 }
 
-// 솔라피 API 서명 생성
-async function generateSignature(apiKey, apiSecret) {
-  const date = new Date().toISOString();
-  const salt = Math.random().toString(36).substr(2, 9);
-  
-  const data = `date=${date}&salt=${salt}`;
-  const signature = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(apiSecret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  
-  const signatureBuffer = await crypto.subtle.sign('HMAC', signature, new TextEncoder().encode(data));
-  const signatureArray = Array.from(new Uint8Array(signatureBuffer));
-  const signatureHex = signatureArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  
-  return signatureHex;
-}
