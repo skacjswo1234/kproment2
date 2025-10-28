@@ -18,9 +18,15 @@ export async function onRequestPost(context) {
       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       
       // 솔라피 API 설정 (환경변수에서 가져오기)
-      const SOLAPI_API_KEY = env.SOLAPI_API_KEY;
-      const SOLAPI_API_SECRET = env.SOLAPI_API_SECRET;
-      const SOLAPI_SENDER = env.SOLAPI_SENDER || '01012345678'; // 발신번호
+      const SOLAPI_API_KEY = env.SOLAPI_API_KEY || 'NCSXSG86GBJ31VDX';
+      const SOLAPI_API_SECRET = env.SOLAPI_API_SECRET || 'WIMT8DAV6UTPM9XDG1KDEBINQVB4Z2FT';
+      const SOLAPI_SENDER = env.SOLAPI_SENDER || '01098989728';
+      
+      console.log('API 키 확인:', { 
+        hasKey: !!SOLAPI_API_KEY, 
+        hasSecret: !!SOLAPI_API_SECRET,
+        sender: SOLAPI_SENDER 
+      });
       
       if (!SOLAPI_API_KEY || !SOLAPI_API_SECRET) {
         console.error('솔라피 API 키가 설정되지 않았습니다.');
@@ -33,33 +39,61 @@ export async function onRequestPost(context) {
         });
       }
 
-    // 솔라피 API 호출 (올바른 형식)
-    const solapiResponse = await fetch('https://api.solapi.com/messages/v4/send-many/detail', {
-      method: 'POST',
+    // 솔라피 API 호출 (일반 단건 발송 엔드포인트)
+    const requestBody = {
+      message: {
+        to: phoneNumber,
+        from: SOLAPI_SENDER,
+        text: `[케이프로먼트] 인증번호: ${verificationCode}\n정부정책지원 상담을 위한 인증번호입니다.`
+      }
+    };
+
+    const solapiUrl = 'https://api.solapi.com/messages/v4/send';
+
+    console.log('솔라피 API 요청:', {
+      url: solapiUrl,
       headers: {
-        'Authorization': `Basic ${btoa(SOLAPI_API_KEY + ':' + SOLAPI_API_SECRET)}`,
+        Authorization: `Basic ${btoa(SOLAPI_API_KEY + ':' + SOLAPI_API_SECRET)}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        messages: [{
-          to: phoneNumber,
-          from: SOLAPI_SENDER,
-          text: `[케이프로먼트] 인증번호: ${verificationCode}\n정부정책지원 상담을 위한 인증번호입니다.`
-        }]
-      })
+      body: requestBody
     });
 
-      if (!solapiResponse.ok) {
-        const errorData = await solapiResponse.text();
-        console.error('솔라피 API 오류:', errorData);
-        return new Response(JSON.stringify({ 
-          success: false, 
-          message: '인증번호 발송에 실패했습니다. 다시 시도해주세요.' 
-        }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
+    const solapiResponse = await fetch(solapiUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${btoa(SOLAPI_API_KEY + ':' + SOLAPI_API_SECRET)}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    console.log('솔라피 API 응답 상태:', solapiResponse.status);
+    
+    if (!solapiResponse.ok) {
+      const errorText = await solapiResponse.text();
+      console.error('솔라피 API 오류:', {
+        status: solapiResponse.status,
+        statusText: solapiResponse.statusText,
+        error: errorText
+      });
+      return new Response(JSON.stringify({
+        success: false,
+        message: `인증번호 발송에 실패했습니다. (${solapiResponse.status}: ${solapiResponse.statusText})`,
+        detail: errorText
+      }), {
+        status: solapiResponse.status,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
+    }
+    
+    const responseData = await solapiResponse.json();
+    console.log('솔라피 API 성공 응답:', responseData);
 
       // 인증번호를 데이터베이스에 저장 (3분 유효)
       const verificationData = {

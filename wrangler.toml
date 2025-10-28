@@ -20,8 +20,8 @@ binding = "VERIFIED_PHONES"
 id = "6008086657344849bad9e78411ad05d4"
 preview_id = "6008086657344849bad9e78411ad05d4"
 
-# 환경변수 (솔라피 API 설정)
-[vars]
+# 환경변수 (솔라피 API 설정) - Pages Functions용
+[env.production.vars]
 SOLAPI_API_KEY = "NCSXSG86GBJ31VDX"
 SOLAPI_API_SECRET = "WIMT8DAV6UTPM9XDG1KDEBINQVB4Z2FT"
 SOLAPI_SENDER = "01098989728"
@@ -30,6 +30,8 @@ SOLAPI_SENDER = "01098989728"
 command = "echo 'Static site - no build needed'"
 cwd = "."
 watch_dir = "."
+
+pages_build_output_dir = "."
 
 [[pages.functions]]
 pattern = "/api/*"

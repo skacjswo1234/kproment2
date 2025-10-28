@@ -232,7 +232,11 @@ function appendAssistantMessageBubble(text) {
     </div>
   `;
   messagesList.appendChild(wrapper);
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+  // 부드러운 스크롤 애니메이션
+  chatContainer.scrollTo({
+    top: chatContainer.scrollHeight,
+    behavior: 'smooth'
+  });
 }
 
 // 사용자 메시지 버블 추가 (오른쪽)
@@ -251,7 +255,11 @@ function appendUserMessageBubble(text) {
     </div>
   `;
   messagesList.appendChild(wrapper);
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+  // 부드러운 스크롤 애니메이션
+  chatContainer.scrollTo({
+    top: chatContainer.scrollHeight,
+    behavior: 'smooth'
+  });
 }
 
 // 공통 텍스트 입력 UI 생성
@@ -269,7 +277,7 @@ function createTextInputUI(placeholder) {
       />
       <button 
         id="text-submit-btn" 
-        class="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#00E5DB] to-[#00C7BE] text-gray-900 hover:shadow-[0_0_15px_rgba(0,229,219,0.4)] active:scale-95 transition-all duration-200 text-sm"
+        class="text-input-btn absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 px-3 py-2 text-sm"
       >
         확인
       </button>
@@ -407,11 +415,16 @@ function setupPhoneInputEvents() {
         // 3분 타이머 시작
         startVerificationTimer();
       } else {
-        throw new Error('인증번호 발송 실패');
+        let errorMessage = '인증번호 발송 실패';
+        try {
+          const errJson = await response.json();
+          errorMessage = errJson.message || errorMessage;
+        } catch (_) {}
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('인증번호 발송 오류:', error);
-      verificationStatus.textContent = '인증번호 발송에 실패했습니다. 다시 시도해주세요.';
+      verificationStatus.textContent = error?.message || '인증번호 발송에 실패했습니다. 다시 시도해주세요.';
       verificationStatus.className = 'text-sm text-red-400';
     } finally {
       sendBtn.disabled = false;
