@@ -1,12 +1,8 @@
-// 인증번호 검증
-export default {
-  async fetch(request, env, ctx) {
-    if (request.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 });
-    }
-
-    try {
-      const { sessionId, phoneNumber, verificationCode } = await request.json();
+// Cloudflare Pages Functions - 인증번호 검증
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  try {
+    const { sessionId, phoneNumber, verificationCode } = await request.json();
       
       if (!sessionId || !phoneNumber || !verificationCode) {
         return new Response(JSON.stringify({ 
@@ -67,23 +63,43 @@ export default {
       // 사용된 인증번호 삭제
       await env.VERIFICATION_CODES.delete(`${sessionId}_${phoneNumber}`);
 
-      return new Response(JSON.stringify({ 
-        success: true, 
-        message: '인증이 완료되었습니다.' 
-      }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: '인증이 완료되었습니다.' 
+    }), {
+      status: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
+    });
 
-    } catch (error) {
-      console.error('인증번호 검증 오류:', error);
-      return new Response(JSON.stringify({ 
-        success: false, 
-        message: '서버 오류가 발생했습니다.' 
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+  } catch (error) {
+    console.error('인증번호 검증 오류:', error);
+    return new Response(JSON.stringify({ 
+      success: false, 
+      message: '서버 오류가 발생했습니다.' 
+    }), {
+      status: 500,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
+    });
   }
-};
+}
+
+export async function onRequestOptions(context) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
+}

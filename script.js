@@ -87,40 +87,26 @@ const questions = [
   {
     id: 8,
     text: "8.최종 학력과 전공을 작성해 주세요\n\n예:00대학교 00과",
-    options: [
-      "고등학교 졸업",
-      "전문대학 졸업",
-      "4년제 대학교 졸업",
-      "대학원 졸업",
-      "기타"
-    ],
-    category: "학력"
+    options: [],
+    category: "학력",
+    inputType: "text",
+    placeholder: "예: 00대학교 00학과"
   },
   {
     id: 9,
     text: "9.현재 직업 또는 직업종 분야를 작성해 주세요\n*4대보험 이력이 높을수로 확률이 좋습니다\n\n예:00업 00팀.부서",
-    options: [
-      "사무직",
-      "영업직",
-      "기술직",
-      "서비스업",
-      "제조업",
-      "IT업",
-      "기타"
-    ],
-    category: "직업"
+    options: [],
+    category: "직업",
+    inputType: "text",
+    placeholder: "예: IT업 개발팀"
   },
   {
     id: 10,
     text: "10.성함을 작성해주세요\n\n예:홍길동",
-    options: [
-      "홍길동",
-      "김철수",
-      "이영희",
-      "박민수",
-      "기타"
-    ],
-    category: "성함"
+    options: [],
+    category: "성함",
+    inputType: "text",
+    placeholder: "예: 홍길동"
   },
   {
     id: 11,
@@ -202,6 +188,8 @@ function showQuestion() {
   // 휴대폰번호 입력인 경우 특별한 UI 생성
   if (question.inputType === 'phone') {
     createPhoneInputUI();
+  } else if (question.inputType === 'text') {
+    createTextInputUI(question.placeholder || '내용을 입력하세요');
   } else {
     // 일반 옵션 버튼들 생성
     question.options.forEach((option, index) => {
@@ -221,6 +209,52 @@ function showQuestion() {
   
   // 진행률 업데이트
   updateProgress();
+}
+
+// 공통 텍스트 입력 UI 생성
+function createTextInputUI(placeholder) {
+  const container = document.createElement('div');
+  container.className = 'space-y-3';
+  container.innerHTML = `
+    <div class="relative">
+      <input 
+        type="text" 
+        id="text-input" 
+        placeholder="${placeholder}" 
+        class="w-full px-4 py-3 rounded-sm bg-card border border-border text-white placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+        maxlength="80"
+      />
+      <button 
+        id="text-submit-btn" 
+        class="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#00E5DB] to-[#00C7BE] text-gray-900 hover:shadow-[0_0_15px_rgba(0,229,219,0.4)] active:scale-95 transition-all duration-200 text-sm"
+      >
+        확인
+      </button>
+    </div>
+  `;
+  
+  answerOptions.appendChild(container);
+  
+  const input = document.getElementById('text-input');
+  const submitBtn = document.getElementById('text-submit-btn');
+  
+  // Enter 키 제출
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitBtn.click();
+    }
+  });
+  
+  // 버튼 제출
+  submitBtn.addEventListener('click', function() {
+    const value = input.value.trim();
+    if (!value) {
+      alert('내용을 입력해주세요.');
+      return;
+    }
+    handleAnswer(value);
+  });
 }
 
 // 휴대폰번호 입력 UI 생성

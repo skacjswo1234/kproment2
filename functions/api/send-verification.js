@@ -1,12 +1,8 @@
-// 솔라피 API를 통한 인증번호 발송
-export default {
-  async fetch(request, env, ctx) {
-    if (request.method !== 'POST') {
-      return new Response('Method not allowed', { status: 405 });
-    }
-
-    try {
-      const { sessionId, phoneNumber } = await request.json();
+// Cloudflare Pages Functions - 인증번호 발송
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  try {
+    const { sessionId, phoneNumber } = await request.json();
       
       if (!phoneNumber || phoneNumber.length !== 11) {
         return new Response(JSON.stringify({ 
@@ -37,12 +33,12 @@ export default {
         });
       }
 
-      // 솔라피 API 호출
-      const solapiResponse = await fetch('https://api.solapi.com/messages/v4/send', {
+    // 솔라피 API 호출
+    const solapiResponse = await fetch('https://api.solapi.com/messages/v4/send', {
         method: 'POST',
         headers: {
-          'Authorization': `HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${new Date().toISOString()}, salt=${Math.random().toString(36).substr(2, 9)}, signature=${await generateSignature(SOLAPI_API_KEY, SOLAPI_API_SECRET)}`,
-          'Content-Type': 'application/json'
+        'Authorization': `HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${new Date().toISOString()}, salt=${Math.random().toString(36).substr(2, 9)}, signature=${await generateSignature(SOLAPI_API_KEY, SOLAPI_API_SECRET)}`,
+        'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           message: {
@@ -51,7 +47,7 @@ export default {
             text: `[케이프로먼트] 인증번호: ${verificationCode}\n정부정책지원 상담을 위한 인증번호입니다.`
           }
         })
-      });
+    });
 
       if (!solapiResponse.ok) {
         const errorData = await solapiResponse.text();
@@ -74,33 +70,53 @@ export default {
         expiresAt: new Date(Date.now() + 3 * 60 * 1000).toISOString() // 3분 후 만료
       };
 
-      // Cloudflare KV에 저장
-      await env.VERIFICATION_CODES.put(
-        `${sessionId}_${phoneNumber}`, 
-        JSON.stringify(verificationData),
-        { expirationTtl: 180 } // 3분 TTL
-      );
+    // Cloudflare KV에 저장
+    await env.VERIFICATION_CODES.put(
+      `${sessionId}_${phoneNumber}`, 
+      JSON.stringify(verificationData),
+      { expirationTtl: 180 } // 3분 TTL
+    );
 
-      return new Response(JSON.stringify({ 
-        success: true, 
-        message: '인증번호가 발송되었습니다.' 
-      }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+    return new Response(JSON.stringify({ 
+      success: true, 
+      message: '인증번호가 발송되었습니다.' 
+    }), {
+      status: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
+    });
 
-    } catch (error) {
-      console.error('인증번호 발송 오류:', error);
-      return new Response(JSON.stringify({ 
-        success: false, 
-        message: '서버 오류가 발생했습니다.' 
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
+  } catch (error) {
+    console.error('인증번호 발송 오류:', error);
+    return new Response(JSON.stringify({ 
+      success: false, 
+      message: '서버 오류가 발생했습니다.' 
+    }), {
+      status: 500,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
+    });
   }
-};
+}
+
+export async function onRequestOptions(context) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
+}
 
 // 솔라피 API 서명 생성
 async function generateSignature(apiKey, apiSecret) {
