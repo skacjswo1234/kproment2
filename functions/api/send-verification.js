@@ -51,25 +51,43 @@ export async function onRequestPost(context) {
     const solapiUrl = 'https://api.solapi.com/messages/v4/send';
 
     // 솔라피 HMAC-SHA256 인증 헤더 생성
-    const date = new Date().toISOString();
-    const salt = crypto.randomUUID();
+    let authorizationHeader = '';
+    try {
+      const date = new Date().toISOString();
+      const salt = crypto.randomUUID();
 
-    async function hmacSha256Hex(secret, message) {
-      const encoder = new TextEncoder();
-      const key = await crypto.subtle.importKey(
-        'raw',
-        encoder.encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-      );
-      const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(message));
-      const bytes = new Uint8Array(signatureBuffer);
-      return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+      async function hmacSha256Hex(secret, message) {
+        const encoder = new TextEncoder();
+        const key = await crypto.subtle.importKey(
+          'raw',
+          encoder.encode(secret),
+          { name: 'HMAC', hash: 'SHA-256' },
+          false,
+          ['sign']
+        );
+        const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(message));
+        const bytes = new Uint8Array(signatureBuffer);
+        return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+      }
+
+      const signature = await hmacSha256Hex(SOLAPI_API_SECRET, date + salt);
+      authorizationHeader = `HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${date}, salt=${salt}, signature=${signature}`;
+    } catch (authErr) {
+      console.error('HMAC 서명 생성 실패:', authErr);
+      return new Response(JSON.stringify({
+        success: false,
+        message: '서버 인증 구성 오류가 발생했습니다.',
+        detail: String(authErr?.message || authErr)
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
     }
-
-    const signature = await hmacSha256Hex(SOLAPI_API_SECRET, date + salt);
-    const authorizationHeader = `HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${date}, salt=${salt}, signature=${signature}`;
 
     console.log('솔라피 API 요청:', {
       url: solapiUrl,
@@ -80,14 +98,33 @@ export async function onRequestPost(context) {
       body: requestBody
     });
 
-    const solapiResponse = await fetch(solapiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: authorizationHeader,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    });
+    let solapiResponse;
+    try {
+      solapiResponse = await fetch(solapiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: authorizationHeader,
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+    } catch (netErr) {
+      console.error('솔라피 네트워크 오류:', netErr);
+      return new Response(JSON.stringify({
+        success: false,
+        message: '문자 발송 서버 연결에 실패했습니다.',
+        detail: String(netErr?.message || netErr)
+      }), {
+        status: 502,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
+    }
 
     console.log('솔라피 API 응답 상태:', solapiResponse.status);
     
@@ -126,11 +163,28 @@ export async function onRequestPost(context) {
       };
 
     // Cloudflare KV에 저장
-    await env.VERIFICATION_CODES.put(
-      `${sessionId}_${phoneNumber}`, 
-      JSON.stringify(verificationData),
-      { expirationTtl: 180 } // 3분 TTL
-    );
+    try {
+      await env.VERIFICATION_CODES.put(
+        `${sessionId}_${phoneNumber}`, 
+        JSON.stringify(verificationData),
+        { expirationTtl: 180 } // 3분 TTL
+      );
+    } catch (kvErr) {
+      console.error('KV 저장 실패:', kvErr);
+      return new Response(JSON.stringify({
+        success: false,
+        message: '인증번호 저장에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        detail: String(kvErr?.message || kvErr)
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
+    }
 
     return new Response(JSON.stringify({ 
       success: true, 
@@ -146,10 +200,11 @@ export async function onRequestPost(context) {
     });
 
   } catch (error) {
-    console.error('인증번호 발송 오류:', error);
+    console.error('인증번호 발송 오류(핸들되지 않은 예외):', error);
     return new Response(JSON.stringify({ 
       success: false, 
-      message: '서버 오류가 발생했습니다.' 
+      message: '서버 오류가 발생했습니다.',
+      detail: String(error?.message || error)
     }), {
       status: 500,
       headers: { 
