@@ -130,6 +130,7 @@ const totalSteps = document.getElementById('total-steps');
 const questionText = document.getElementById('question-text');
 const answerOptions = document.getElementById('answer-options');
 const chatContainer = document.getElementById('chat-container');
+const messagesList = document.getElementById('messages-list');
 const loadingOverlay = document.getElementById('loading-overlay');
 const resultModal = document.getElementById('result-modal');
 const resultContent = document.getElementById('result-content');
@@ -181,6 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function showQuestion() {
   const question = questions[currentQuestionIndex];
   questionText.textContent = question.text;
+  appendAssistantMessageBubble(question.text);
   
   // 답변 옵션 생성
   answerOptions.innerHTML = '';
@@ -209,6 +211,47 @@ function showQuestion() {
   
   // 진행률 업데이트
   updateProgress();
+}
+// 어시스턴트 메시지 버블 추가
+function appendAssistantMessageBubble(text) {
+  if (!messagesList) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'flex w-full mb-4 fade-in justify-start';
+  wrapper.innerHTML = `
+    <div class="flex gap-3 max-w-85 md:max-w-70">
+      <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden bg-card border border-primary/30">
+        <img src="logo.png" alt="케이프로먼트" class="w-full h-full object-cover rounded-full">
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-xs font-medium text-primary">케이프로먼트</span>
+        <div class="px-4 py-3 rounded-sm shadow-lg bg-card border border-border text-white chat-bubble assistant terminal-glow">
+          <p class="text-sm whitespace-pre-wrap leading-relaxed text-left">${text}</p>
+        </div>
+        <span class="text-[10px] text-gray-500 mt-1">${formatFullTime(new Date())}</span>
+      </div>
+    </div>
+  `;
+  messagesList.appendChild(wrapper);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// 사용자 메시지 버블 추가
+function appendUserMessageBubble(text) {
+  if (!messagesList) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'flex w-full mb-4 fade-in justify-end';
+  wrapper.innerHTML = `
+    <div class="flex gap-3 max-w-85 md:max-w-70">
+      <div class="flex flex-col gap-1 ml-auto">
+        <div class="px-4 py-3 rounded-sm shadow-lg bg-terminal-blue text-white chat-bubble user border border-border">
+          <p class="text-sm whitespace-pre-wrap leading-relaxed text-left">${text}</p>
+        </div>
+        <span class="text-[10px] text-gray-500 mt-1 text-right">${formatFullTime(new Date())}</span>
+      </div>
+    </div>
+  `;
+  messagesList.appendChild(wrapper);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
 // 공통 텍스트 입력 UI 생성
@@ -458,6 +501,7 @@ function startVerificationTimer() {
 async function handleAnswer(answer) {
   const question = questions[currentQuestionIndex];
   answers[currentQuestionIndex] = answer;
+  appendUserMessageBubble(answer);
   
   // 답변 저장
   await saveAnswer(question.id, question.text, answer, question.category);
