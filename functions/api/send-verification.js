@@ -50,10 +50,31 @@ export async function onRequestPost(context) {
 
     const solapiUrl = 'https://api.solapi.com/messages/v4/send';
 
+    // 솔라피 HMAC-SHA256 인증 헤더 생성
+    const date = new Date().toISOString();
+    const salt = crypto.randomUUID();
+
+    async function hmacSha256Hex(secret, message) {
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const signatureBuffer = await crypto.subtle.sign('HMAC', key, encoder.encode(message));
+      const bytes = new Uint8Array(signatureBuffer);
+      return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    const signature = await hmacSha256Hex(SOLAPI_API_SECRET, date + salt);
+    const authorizationHeader = `HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${date}, salt=${salt}, signature=${signature}`;
+
     console.log('솔라피 API 요청:', {
       url: solapiUrl,
       headers: {
-        Authorization: `Basic ${btoa(SOLAPI_API_KEY + ':' + SOLAPI_API_SECRET)}`,
+        Authorization: authorizationHeader,
         'Content-Type': 'application/json'
       },
       body: requestBody
@@ -62,7 +83,7 @@ export async function onRequestPost(context) {
     const solapiResponse = await fetch(solapiUrl, {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${btoa(SOLAPI_API_KEY + ':' + SOLAPI_API_SECRET)}`,
+        Authorization: authorizationHeader,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(requestBody)
