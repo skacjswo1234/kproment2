@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
       // 솔라피 API 설정 (환경변수에서 가져오기)
       const SOLAPI_API_KEY = env.SOLAPI_API_KEY || 'NCSXSG86GBJ31VDX';
       const SOLAPI_API_SECRET = env.SOLAPI_API_SECRET || 'WIMT8DAV6UTPM9XDG1KDEBINQVB4Z2FT';
-      const SOLAPI_SENDER = env.SOLAPI_SENDER || '01098989728';
+      const SOLAPI_SENDER = env.SOLAPI_SENDER || '01099820085';
       
       console.log('API 키 확인:', { 
         hasKey: !!SOLAPI_API_KEY, 
@@ -161,6 +161,24 @@ export async function onRequestPost(context) {
         createdAt: new Date().toISOString(),
         expiresAt: new Date(Date.now() + 3 * 60 * 1000).toISOString() // 3분 후 만료
       };
+
+    // Cloudflare KV 바인딩 확인
+    if (!env.VERIFICATION_CODES || typeof env.VERIFICATION_CODES.put !== 'function') {
+      console.error('KV 바인딩 누락: VERIFICATION_CODES가 정의되지 않았습니다.');
+      return new Response(JSON.stringify({
+        success: false,
+        message: '서버 설정 오류: 인증번호 저장소가 연결되지 않았습니다.',
+        detail: 'Cloudflare Pages 프로젝트에 KV 바인딩(VERIFICATION_CODES)을 연결하세요.'
+      }), {
+        status: 503,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
+    }
 
     // Cloudflare KV에 저장
     try {
