@@ -770,13 +770,14 @@ function hideModal(modalId) {
 
 // 상담 예약 처리
 async function handleBookConsultation() {
-  const name = prompt('이름을 입력해주세요:');
-  if (!name) return;
+  // 대화에서 이미 받은 정보 사용
+  const name = answers[9] || '고객'; // 질문 10번: 성함
+  const phone = answers[10] || ''; // 질문 11번: 휴대폰번호
   
-  const phone = prompt('연락처를 입력해주세요:');
-  if (!phone) return;
-  
-  const email = prompt('이메일을 입력해주세요 (선택사항):');
+  if (!phone) {
+    showErrorModal('휴대폰번호 정보가 없습니다. 다시 시작해주세요.');
+    return;
+  }
   
   try {
     const response = await fetch('/api/book-consultation', {
@@ -788,7 +789,7 @@ async function handleBookConsultation() {
         sessionId,
         name,
         phone,
-        email: email || '',
+        email: '', // 이메일은 선택사항이므로 빈 값
         consultationType: 'phone'
       })
     });
@@ -796,6 +797,11 @@ async function handleBookConsultation() {
     if (response.ok) {
       showSuccessModal();
       resultModal.classList.add('hidden');
+      
+      // 3초 후 자동으로 초기 단계로 돌아가기
+      setTimeout(() => {
+        resetChat();
+      }, 3000);
     } else {
       showErrorModal('상담 예약 중 오류가 발생했습니다.');
     }

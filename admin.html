@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>케이프로먼트 관리자</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <link rel="icon" href="/logo.png">
+</head>
+<body>
+    <!-- 로그인 화면 -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <img src="logo.png" alt="케이프로먼트" class="login-logo">
+                <h1>관리자 로그인</h1>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-btn">로그인</button>
+            </form>
+            <div id="login-error" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- 관리자 대시보드 -->
+    <div id="admin-dashboard" class="admin-dashboard hidden">
+        <!-- 모바일 햄버거 메뉴 -->
+        <div class="mobile-menu-toggle" id="mobile-menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- 사이드바 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="logo.png" alt="케이프로먼트" class="sidebar-logo">
+                <h2>케이프로먼트</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-tab="inquiries">
+                    <span class="menu-icon">📋</span>
+                    <span class="menu-text">문의리스트</span>
+                </li>
+                <li class="menu-item" data-tab="password">
+                    <span class="menu-icon">🔒</span>
+                    <span class="menu-text">비밀번호 변경</span>
+                </li>
+                <li class="menu-item" data-tab="logout">
+                    <span class="menu-icon">🚪</span>
+                    <span class="menu-text">로그아웃</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 문의리스트 탭 -->
+            <div id="inquiries-tab" class="tab-content active">
+                <div class="content-header">
+                    <h1>문의리스트</h1>
+                    <button id="refresh-inquiries" class="refresh-btn">새로고침</button>
+                </div>
+                <div class="content-body">
+                    <div id="inquiries-loading" class="loading">문의리스트를 불러오는 중...</div>
+                    <div id="inquiries-list" class="inquiries-list"></div>
+                </div>
+            </div>
+
+            <!-- 비밀번호 변경 탭 -->
+            <div id="password-tab" class="tab-content">
+                <div class="content-header">
+                    <h1>비밀번호 변경</h1>
+                </div>
+                <div class="content-body">
+                    <form id="password-form" class="password-form">
+                        <div class="form-group">
+                            <label for="current-password">현재 비밀번호</label>
+                            <input type="password" id="current-password" name="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-password">새 비밀번호</label>
+                            <input type="password" id="new-password" name="newPassword" required minlength="4">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm-password">새 비밀번호 확인</label>
+                            <input type="password" id="confirm-password" name="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="submit-btn">비밀번호 변경</button>
+                    </form>
+                    <div id="password-message" class="message"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 문의 상세 모달 -->
+    <div id="inquiry-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>문의 상세</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="inquiry-details"></div>
+        </div>
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+</html>

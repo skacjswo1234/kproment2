@@ -1,0 +1,133 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/admin-change-password",
+      "mountPath": "/api",
+      "method": "OPTIONS",
+      "module": [
+        "api/admin-change-password.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/api/admin-change-password",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/admin-change-password.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/admin-inquiries",
+      "mountPath": "/api",
+      "method": "OPTIONS",
+      "module": [
+        "api/admin-inquiries.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/api/admin-inquiries",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/admin-inquiries.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/admin-login",
+      "mountPath": "/api",
+      "method": "OPTIONS",
+      "module": [
+        "api/admin-login.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/api/admin-login",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/admin-login.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/book-consultation",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/book-consultation.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/generate-result",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/generate-result.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/get-session",
+      "mountPath": "/api",
+      "method": "GET",
+      "module": [
+        "api/get-session.js:onRequestGet"
+      ]
+    },
+    {
+      "routePath": "/api/save-answer",
+      "mountPath": "/api",
+      "method": "OPTIONS",
+      "module": [
+        "api/save-answer.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/api/save-answer",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/save-answer.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/send-verification",
+      "mountPath": "/api",
+      "method": "OPTIONS",
+      "module": [
+        "api/send-verification.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/api/send-verification",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/send-verification.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/test-db",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/test-db.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/verify-code",
+      "mountPath": "/api",
+      "method": "OPTIONS",
+      "module": [
+        "api/verify-code.js:onRequestOptions"
+      ]
+    },
+    {
+      "routePath": "/api/verify-code",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/verify-code.js:onRequestPost"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}

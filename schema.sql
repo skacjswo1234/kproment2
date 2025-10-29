@@ -100,6 +100,13 @@ CREATE TABLE IF NOT EXISTS consultation_stats (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 관리자 패스워드 테이블
+CREATE TABLE IF NOT EXISTS admin_password (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  password TEXT NOT NULL,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- 인덱스 생성
 CREATE INDEX IF NOT EXISTS idx_user_answers_session_id ON user_answers(session_id);
 CREATE INDEX IF NOT EXISTS idx_user_answers_question_id ON user_answers(question_id);
@@ -139,3 +146,6 @@ INSERT INTO regional_support (region, program_name, support_amount_min, support_
   ('세종', '세종창업지원', 3000, 6000, 1.8),
   ('강원', '강원창업지원', 2000, 5000, 1.2),
   ('제주', '제주창업지원', 2000, 4000, 1.1);
+
+-- 관리자 기본 패스워드 (1234)
+INSERT OR IGNORE INTO admin_password (id, password) VALUES (1, '1234');

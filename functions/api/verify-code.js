@@ -14,8 +14,42 @@ export async function onRequestPost(context) {
         });
       }
 
+      // 바인딩 존재 여부 점검 (명확한 오류 표면화)
+      if (!env.VERIFICATION_CODES || typeof env.VERIFICATION_CODES.get !== 'function') {
+        console.error('KV 바인딩 누락 또는 오타: VERIFICATION_CODES');
+        return new Response(JSON.stringify({
+          success: false,
+          message: '서버 설정 오류: 인증번호 저장소(VERIFICATION_CODES)가 연결되지 않았습니다.'
+        }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+      if (!env.VERIFIED_PHONES || typeof env.VERIFIED_PHONES.put !== 'function') {
+        console.error('KV 바인딩 누락 또는 오타: VERIFIED_PHONES');
+        return new Response(JSON.stringify({
+          success: false,
+          message: '서버 설정 오류: 인증 상태 저장소(VERIFIED_PHONES)가 연결되지 않았습니다.'
+        }), {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
+
       // 저장된 인증번호 조회
-      const storedData = await env.VERIFICATION_CODES.get(`${sessionId}_${phoneNumber}`);
+      let storedData;
+      try {
+        storedData = await env.VERIFICATION_CODES.get(`${sessionId}_${phoneNumber}`);
+      } catch (kvGetErr) {
+        console.error('VERIFICATION_CODES.get 실패:', kvGetErr);
+        return new Response(JSON.stringify({
+          success: false,
+          message: '서버 저장소 조회 중 오류가 발생했습니다.'
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
       
       if (!storedData) {
         return new Response(JSON.stringify({ 
@@ -32,7 +66,11 @@ export async function onRequestPost(context) {
       // 만료 시간 확인
       if (new Date() > new Date(verificationData.expiresAt)) {
         // 만료된 데이터 삭제
-        await env.VERIFICATION_CODES.delete(`${sessionId}_${phoneNumber}`);
+        try {
+          await env.VERIFICATION_CODES.delete(`${sessionId}_${phoneNumber}`);
+        } catch (kvDelErr) {
+          console.error('VERIFICATION_CODES.delete 실패(만료 처리):', kvDelErr);
+        }
         
         return new Response(JSON.stringify({ 
           success: false, 
@@ -55,13 +93,28 @@ export async function onRequestPost(context) {
       }
 
       // 인증 성공 - 인증된 휴대폰번호를 세션에 저장
-      await env.VERIFIED_PHONES.put(sessionId, JSON.stringify({
-        phoneNumber,
-        verifiedAt: new Date().toISOString()
-      }), { expirationTtl: 3600 }); // 1시간 유효
+      try {
+        await env.VERIFIED_PHONES.put(sessionId, JSON.stringify({
+          phoneNumber,
+          verifiedAt: new Date().toISOString()
+        }), { expirationTtl: 3600 }); // 1시간 유효
+      } catch (kvPutErr) {
+        console.error('VERIFIED_PHONES.put 실패:', kvPutErr);
+        return new Response(JSON.stringify({
+          success: false,
+          message: '서버 저장소 저장 중 오류가 발생했습니다.'
+        }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
 
       // 사용된 인증번호 삭제
-      await env.VERIFICATION_CODES.delete(`${sessionId}_${phoneNumber}`);
+      try {
+        await env.VERIFICATION_CODES.delete(`${sessionId}_${phoneNumber}`);
+      } catch (kvDelErr2) {
+        console.error('VERIFICATION_CODES.delete 실패(사용 후 정리):', kvDelErr2);
+      }
 
     return new Response(JSON.stringify({ 
       success: true, 

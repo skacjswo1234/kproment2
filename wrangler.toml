@@ -20,6 +20,11 @@ binding = "VERIFIED_PHONES"
 id = "6008086657344849bad9e78411ad05d4"
 preview_id = "6008086657344849bad9e78411ad05d4"
 
+[[kv_namespaces]]
+binding = "ADMIN_SESSIONS"
+id = "f575456dd6c94974bfcc2335fc2f34f8"
+preview_id = "f575456dd6c94974bfcc2335fc2f34f8"
+
 # 환경변수 (솔라피 API 설정) - Pages Functions용
 [env.production.vars]
 SOLAPI_API_KEY = "NCSXSG86GBJ31VDX"

@@ -814,3 +814,66 @@ input:focus {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* 모바일 텍스트 입력 개선 */
+@media (max-width: 640px) {
+  .text-input-btn {
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    min-width: 60px;
+  }
+  
+  /* 텍스트 입력 컨테이너 모바일 최적화 */
+  .space-y-3 .relative {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .space-y-3 .relative input {
+    padding-right: 0.75rem; /* 버튼과 겹치지 않도록 */
+  }
+  
+  .space-y-3 .relative .text-input-btn {
+    position: static !important;
+    transform: none !important;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  /* 휴대폰번호 입력 모바일 최적화 */
+  .space-y-4 .relative {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .space-y-4 .relative input {
+    padding-right: 0.75rem;
+  }
+  
+  .space-y-4 .relative button {
+    position: static !important;
+    transform: none !important;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  
+  /* 인증번호 입력 모바일 최적화 */
+  #verification-section .relative {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  #verification-section .relative input {
+    padding-right: 0.75rem;
+  }
+  
+  #verification-section .relative button {
+    position: static !important;
+    transform: none !important;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
