@@ -1,4 +1,4 @@
--- 케이프로먼트 정책자금 상담 데이터베이스 스키마 (kproment2-db)
+-- 케이프로미넌트 정책자금 상담 데이터베이스 스키마 (kproment2-db)
 -- 사용자 상담 세션 테이블
 CREATE TABLE IF NOT EXISTS consultation_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -44,7 +44,7 @@ export async function onRequestPost(context) {
       message: {
         to: phoneNumber,
         from: SOLAPI_SENDER,
-        text: `[케이프로먼트] 인증번호: ${verificationCode}\n정부정책지원 상담을 위한 인증번호입니다.`
+        text: `[케이프로미넌트] 인증번호: ${verificationCode}\n정부정책지원 상담을 위한 인증번호입니다.`
       }
     };
 
