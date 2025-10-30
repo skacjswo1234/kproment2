@@ -597,8 +597,8 @@ async function handleAnswer(answer) {
   answers[currentQuestionIndex] = answer;
   appendUserMessageBubble(answer);
   
-  // 답변 저장
-  await saveAnswer(question.id, question.text, answer, question.category);
+  // 답변은 메모리에만 저장 (최종 모달에서 한 번에 저장)
+  // await saveAnswer(question.id, question.text, answer, question.category); // 주석 처리
   
   // 다음 질문으로 이동
   if (currentQuestionIndex < questions.length - 1) {
