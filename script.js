@@ -424,11 +424,30 @@ function setupPhoneInputEvents() {
     sendBtn.disabled = value.length < 13;
   });
   
+  // 로컬 테스트 모드 (개발 환경에서만 사용)
+  const isLocalTestMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
   // 인증번호 발송
   sendBtn.addEventListener('click', async function() {
     const phoneNumber = phoneInput.value.replace(/\D/g, '');
     if (phoneNumber.length !== 11) {
       alert('올바른 휴대폰번호를 입력해주세요.');
+      return;
+    }
+    
+    // 로컬 테스트 모드: 인증번호 없이 바로 진행
+    if (isLocalTestMode) {
+      console.log('로컬 테스트 모드: 인증번호 없이 진행');
+      verificationSection.classList.remove('hidden');
+      verificationStatus.textContent = '[테스트 모드] 인증번호: 123456 (콘솔에 표시)';
+      verificationStatus.className = 'text-sm text-green-400';
+      
+      // 인증번호 입력란에 포커스
+      setTimeout(() => {
+        if (verificationCodeInput) {
+          verificationCodeInput.focus();
+        }
+      }, 100);
       return;
     }
     
@@ -496,6 +515,19 @@ function setupPhoneInputEvents() {
     const code = verificationCodeInput.value;
     if (code.length !== 6) {
       alert('6자리 인증번호를 입력해주세요.');
+      return;
+    }
+    
+    // 로컬 테스트 모드: 모든 인증번호 허용
+    if (isLocalTestMode) {
+      console.log('로컬 테스트 모드: 인증번호 검증 통과');
+      verificationStatus.textContent = '인증이 완료되었습니다!';
+      verificationStatus.className = 'text-sm text-green-400';
+      
+      // 답변 저장 및 다음 단계로 진행
+      setTimeout(() => {
+        handleAnswer(phoneInput.value);
+      }, 1000);
       return;
     }
     
