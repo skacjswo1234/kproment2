@@ -653,14 +653,18 @@ async function generateConsultationResult() {
     
     if (response.ok) {
       const result = await response.json();
+      console.log('API 응답:', result); // 디버깅용
+      console.log('loanConditions:', result.loanConditions); // 디버깅용
       showResult(result.loanConditions);
     } else {
       // API 실패 시 기본 결과 표시
+      console.log('API 실패, 기본 결과 사용'); // 디버깅용
       showResult(calculateDefaultResult());
     }
   } catch (error) {
     console.error('상담 결과 생성 오류:', error);
     // 오류 시 기본 결과 표시
+    console.log('오류 발생, 기본 결과 사용'); // 디버깅용
     showResult(calculateDefaultResult());
   } finally {
     isLoading = false;
@@ -708,6 +712,8 @@ function calculateDefaultResult() {
   
   // 대출이력에 따른 지원확률 계산
   const loanHistory = answers[4];
+  console.log('대출이력 답변:', loanHistory); // 디버깅용
+  
   if (loanHistory?.includes('총1천만원 미만')) {
     loanSupportProbability = 95;
   } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
@@ -718,7 +724,11 @@ function calculateDefaultResult() {
     loanSupportProbability = 80;
   } else if (loanHistory?.includes('총1억원 이상')) {
     loanSupportProbability = 70;
+  } else {
+    console.log('대출이력 매칭 실패:', loanHistory); // 디버깅용
   }
+  
+  console.log('대출 지원확률:', loanSupportProbability); // 디버깅용
   
   const gender = answers[5];
   if (gender?.includes('여성')) {
