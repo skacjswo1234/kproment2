@@ -203,8 +203,39 @@ function showQuestion() {
       `;
       
       button.addEventListener('click', () => handleAnswer(option));
+      
+      // 키보드 이벤트: Enter, Space로 선택
+      button.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleAnswer(option);
+        }
+        
+        // 방향키로 버튼 이동
+        const buttons = Array.from(answerOptions.querySelectorAll('.answer-button'));
+        const currentIndex = buttons.indexOf(button);
+        
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          e.preventDefault();
+          const nextIndex = (currentIndex + 1) % buttons.length;
+          buttons[nextIndex].focus();
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prevIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+          buttons[prevIndex].focus();
+        }
+      });
+      
       answerOptions.appendChild(button);
     });
+    
+    // 첫 번째 버튼에 자동 포커스
+    setTimeout(() => {
+      const firstButton = answerOptions.querySelector('.answer-button');
+      if (firstButton) {
+        firstButton.focus();
+      }
+    }, 100);
   }
   
   // 진행률 업데이트
@@ -304,6 +335,11 @@ function createTextInputUI(placeholder) {
     }
     handleAnswer(value);
   });
+  
+  // 포커스 자동 설정
+  setTimeout(() => {
+    input.focus();
+  }, 100);
 }
 
 // 휴대폰번호 입력 UI 생성
@@ -355,6 +391,14 @@ function createPhoneInputUI() {
   
   // 이벤트 리스너 등록
   setupPhoneInputEvents();
+  
+  // 포커스 자동 설정
+  setTimeout(() => {
+    const phoneInput = document.getElementById('phone-input');
+    if (phoneInput) {
+      phoneInput.focus();
+    }
+  }, 100);
 }
 
 // 휴대폰번호 입력 이벤트 설정
