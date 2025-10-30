@@ -55,10 +55,10 @@ const questions = [
     id: 5,
     text: "5.기존 대출이력은 어떻게 되나요?",
     options: [
-      "총1천만원 미안",
+      "총1천만원 미만",
       "총1천만원 이상~3천만원 미만",
       "총3천만원 이상~5천만원 미만",
-      "총5천만원 이상~ 1억원 미안",
+      "총5천만원 이상~1억원 미만",
       "총1억원 이상"
     ],
     category: "대출이력"
@@ -94,7 +94,7 @@ const questions = [
   },
   {
     id: 9,
-    text: "9.현재 직업 또는 직업종 분야를 작성해 주세요\n*4대보험 이력이 높을수로 확률이 좋습니다\n\n예:00업 00팀.부서",
+    text: "9.현재 직업 또는 직업종 분야를 작성해 주세요\n*4대보험 이력이 높을수록 확률이 좋습니다\n\n예:00업 00팀.부서",
     options: [],
     category: "직업",
     inputType: "text",
@@ -127,7 +127,6 @@ let isLoading = false;
 const progressBar = document.getElementById('progress-bar');
 const progressText = document.getElementById('progress-text');
 const totalSteps = document.getElementById('total-steps');
-const questionText = document.getElementById('question-text');
 const answerOptions = document.getElementById('answer-options');
 const chatContainer = document.getElementById('chat-container');
 const messagesList = document.getElementById('messages-list');
@@ -181,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // 질문 표시
 function showQuestion() {
   const question = questions[currentQuestionIndex];
-  questionText.textContent = question.text;
   appendAssistantMessageBubble(question.text);
   
   // 답변 옵션 생성
@@ -220,10 +218,10 @@ function appendAssistantMessageBubble(text) {
   wrapper.innerHTML = `
     <div class="flex gap-3 max-w-85 md:max-w-70">
       <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden bg-card border border-primary/30">
-        <img src="logo.png" alt="케이프로먼트" class="w-full h-full object-cover rounded-full">
+        <img src="logo.png" alt="케이프로미넌트" class="w-full h-full object-cover rounded-full">
       </div>
       <div class="flex flex-col gap-1">
-        <span class="text-xs font-medium text-primary">케이프로먼트</span>
+        <span class="text-xs font-medium text-primary">케이프로미넌트</span>
         <div class="px-4 py-3 rounded-sm shadow-lg bg-card border border-border text-white chat-bubble assistant terminal-glow">
           <p class="text-sm whitespace-pre-wrap leading-relaxed text-left">${text}</p>
         </div>
@@ -674,9 +672,22 @@ function calculateDefaultResult() {
   }
   
   const loanHistory = answers[4];
-  if (loanHistory?.includes('총1천만원 미안')) {
+  let loanSupportProbability = 95; // 기본 대출 지원확률
+  
+  if (loanHistory?.includes('총1천만원 미만')) {
+    loanSupportProbability = 95;
     approvalProbability += 10; // 대출이력이 적으면 우대
+  } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
+    loanSupportProbability = 90;
+    approvalProbability += 5;
+  } else if (loanHistory?.includes('총3천만원 이상~5천만원 미만')) {
+    loanSupportProbability = 85;
+    approvalProbability += 2;
+  } else if (loanHistory?.includes('총5천만원 이상~1억원 미만')) {
+    loanSupportProbability = 80;
+    approvalProbability -= 2;
   } else if (loanHistory?.includes('총1억원 이상')) {
+    loanSupportProbability = 70;
     approvalProbability -= 15; // 대출이력이 많으면 불리
   }
   
@@ -710,20 +721,23 @@ function calculateDefaultResult() {
     supportAmountMin,
     supportAmountMax,
     approvalProbability,
+    loanSupportProbability,
     recommendedProducts
   };
 }
 
 // 결과 표시
 function showResult(result) {
+  const loanSupportRate = result.loanSupportProbability || 80; // 대출 지원확률 기본값
   const resultHtml = `
 감사합니다! 모든 질문에 답변해주셨습니다.
 
-입력해주신 정보를 바탕으로 정부정책지원 가능 여부와 자금확보 가능성을 분석해드리겠습니다.
+입력해주신 정보를 바탕으로 정부정책지원 기술특허개발 가능여부와 자금확보 가능성을 분석해 드립니다.
 
 📋 <strong>상담 결과 요약:</strong>
-• 정부지원 가능 금액: ${result.supportAmountMin}만원 ~ ${result.supportAmountMax}만원
-• 지원 확률: ${result.approvalProbability}%
+• 정부지원 가능자금: 최저 1억원 ~ 최대 3억원 예비창업지원
+• 지원확률: ${result.approvalProbability}%
+• 대출 지원확률: ${loanSupportRate}%
 • 추천 지원사업: ${result.recommendedProducts.join(', ')}
 • 기술특허개발, 제조, IT 시제품개발, 앱웹개발 지원 가능
 

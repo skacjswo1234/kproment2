@@ -103,9 +103,22 @@ function calculateLoanConditions(answers) {
 
   // 대출이력에 따른 조건 조정
   const loanHistory = answers.find(a => a.questionId === 5)?.answerText;
-  if (loanHistory?.includes('총1천만원 미안')) {
+  let loanSupportProbability = 95; // 기본 대출 지원확률
+  
+  if (loanHistory?.includes('총1천만원 미만')) {
+    loanSupportProbability = 95;
     approvalProbability += 10; // 대출이력이 적으면 우대
+  } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
+    loanSupportProbability = 90;
+    approvalProbability += 5;
+  } else if (loanHistory?.includes('총3천만원 이상~5천만원 미만')) {
+    loanSupportProbability = 85;
+    approvalProbability += 2;
+  } else if (loanHistory?.includes('총5천만원 이상~1억원 미만')) {
+    loanSupportProbability = 80;
+    approvalProbability -= 2;
   } else if (loanHistory?.includes('총1억원 이상')) {
+    loanSupportProbability = 70;
     approvalProbability -= 15; // 대출이력이 많으면 불리
   }
 
@@ -140,12 +153,13 @@ function calculateLoanConditions(answers) {
   // 승인 가능성 범위 제한
   approvalProbability = Math.max(30, Math.min(95, approvalProbability));
 
-  summary = `입력하신 정보를 바탕으로 ${supportAmountMin}만원~${supportAmountMax}만원 정부지원이 가능하며, 승인 가능성은 ${approvalProbability}%로 추정됩니다. 기술특허개발, 제조, IT 시제품개발, 앱웹개발을 포함한 토탈 원스톱 솔루션 지원이 가능합니다.`;
+  summary = `입력해주신 정보를 바탕으로 정부정책지원 기술특허개발 가능여부와 자금확보 가능성을 분석합니다. ${supportAmountMin}만원~${supportAmountMax}만원 정부지원이 가능하며, 승인 가능성은 ${approvalProbability}%로 추정됩니다. 대출 지원확률은 ${loanSupportProbability}%입니다. 기술특허개발, 제조, IT 시제품개발, 앱웹개발을 포함한 토탈 원스톱 솔루션 지원이 가능합니다.`;
 
   return {
     supportAmountMin,
     supportAmountMax,
     approvalProbability,
+    loanSupportProbability,
     recommendedProducts,
     summary
   };
