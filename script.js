@@ -683,7 +683,7 @@ async function generateConsultationResult() {
 function calculateDefaultResult() {
   let supportAmountMin = 5000;
   let supportAmountMax = 10000;
-  let loanSupportProbability = 95; // 대출 지원확률
+  let loanSupportProbability = 0; // 기본값 없음
   let recommendedProducts = ['정부지원사업', '창업자금지원', '기술개발지원'];
   
   // 답변에 따른 조건 조정
@@ -768,7 +768,8 @@ function calculateDefaultResult() {
 
 // 결과 표시
 function showResult(result) {
-  const loanSupportRate = result.loanSupportProbability || 80; // 대출 지원확률 기본값
+  console.log('showResult 호출됨, result:', result); // 디버깅용
+  const loanSupportRate = result.loanSupportProbability || '확률 계산 실패'; // 대출 지원확률
   const resultHtml = `
 감사합니다! 모든 질문에 답변해주셨습니다.
 

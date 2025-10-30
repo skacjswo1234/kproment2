@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
 function calculateLoanConditions(answers) {
   let supportAmountMin = 3000; // 기본값 (만원)
   let supportAmountMax = 8000;
-  let loanSupportProbability = 95; // 대출 지원확률
+  let loanSupportProbability = 0; // 기본값 없음
   let recommendedProducts = ['정부지원사업', '창업자금지원', '기술개발지원'];
   let summary = '';
 
@@ -138,6 +138,8 @@ function calculateLoanConditions(answers) {
   }
 
   summary = `입력해주신 정보를 바탕으로 정부정책지원 기술특허개발 가능여부와 자금확보 가능성을 분석합니다. ${supportAmountMin}만원~${supportAmountMax}만원 정부지원이 가능하며, 대출 지원확률은 ${loanSupportProbability}%입니다. 기술특허개발, 제조, IT 시제품개발, 앱웹개발을 포함한 토탈 원스톱 솔루션 지원이 가능합니다.`;
+
+  console.log('최종 계산된 loanSupportProbability:', loanSupportProbability); // 디버깅용
 
   return {
     supportAmountMin,
