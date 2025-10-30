@@ -22,7 +22,7 @@ export async function onRequestPost(context) {
       sessionId,
       loanConditions.supportAmountMin,
       loanConditions.supportAmountMax,
-      loanConditions.approvalProbability,
+      loanConditions.loanSupportProbability,
       JSON.stringify(loanConditions.recommendedProducts),
       loanConditions.summary
     ).run();
@@ -54,7 +54,7 @@ export async function onRequestPost(context) {
 function calculateLoanConditions(answers) {
   let supportAmountMin = 3000; // 기본값 (만원)
   let supportAmountMax = 8000;
-  let approvalProbability = 70;
+  let loanSupportProbability = 95; // 대출 지원확률
   let recommendedProducts = ['정부지원사업', '창업자금지원', '기술개발지원'];
   let summary = '';
 
@@ -63,102 +63,78 @@ function calculateLoanConditions(answers) {
   if (businessStatus?.includes('사업자 등록 한적없습니다')) {
     supportAmountMin = 3000;
     supportAmountMax = 5000;
-    approvalProbability = 90; // 예비창업자 우대
     recommendedProducts = ['예비창업자 지원사업', '스타트업 지원', '정부지원사업'];
   } else if (businessStatus?.includes('3년 미만')) {
     supportAmountMin = 5000;
     supportAmountMax = 10000;
-    approvalProbability = 85;
     recommendedProducts = ['초기창업자 지원', '정부지원사업', '기술개발지원'];
   } else if (businessStatus?.includes('3년 이상')) {
     supportAmountMin = 3000;
     supportAmountMax = 8000;
-    approvalProbability = 75;
     recommendedProducts = ['기존사업자 지원', '정부지원사업', '기술혁신지원'];
   }
 
   // 정부지원 경험에 따른 조건 조정
   const supportExperience = answers.find(a => a.questionId === 2)?.answerText;
   if (supportExperience?.includes('지원경험 있습니다') || supportExperience?.includes('합격해서 지원금 받은적이 있습니다')) {
-    approvalProbability += 15;
     supportAmountMax += 2000;
-  } else if (supportExperience?.includes('들어본 적 있습니다')) {
-    approvalProbability += 5;
   }
 
   // 사업 아이템에 따른 조건 조정
   const businessItem = answers.find(a => a.questionId === 3)?.answerText;
   if (businessItem?.includes('생각하고있는 아이템 있습니다')) {
-    approvalProbability += 10;
     recommendedProducts.push('아이템개발지원');
   }
 
   // 거주지역에 따른 조건 조정
   const region = answers.find(a => a.questionId === 4)?.answerText;
-  if (region?.includes('서울') || region?.includes('수도권')) {
-    approvalProbability += 5; // 수도권 우대
-  } else if (region?.includes('제주') || region?.includes('강원')) {
-    approvalProbability += 10; // 지역균형발전 우대
+  if (region?.includes('제주') || region?.includes('강원')) {
+    // 지역균형발전 우대
   }
 
-  // 대출이력에 따른 조건 조정
+  // 대출이력에 따른 지원확률 계산
   const loanHistory = answers.find(a => a.questionId === 5)?.answerText;
-  let loanSupportProbability = 95; // 기본 대출 지원확률
-  
   if (loanHistory?.includes('총1천만원 미만')) {
     loanSupportProbability = 95;
-    approvalProbability += 10; // 대출이력이 적으면 우대
   } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
     loanSupportProbability = 90;
-    approvalProbability += 5;
   } else if (loanHistory?.includes('총3천만원 이상~5천만원 미만')) {
     loanSupportProbability = 85;
-    approvalProbability += 2;
   } else if (loanHistory?.includes('총5천만원 이상~1억원 미만')) {
     loanSupportProbability = 80;
-    approvalProbability -= 2;
   } else if (loanHistory?.includes('총1억원 이상')) {
     loanSupportProbability = 70;
-    approvalProbability -= 15; // 대출이력이 많으면 불리
   }
 
   // 성별에 따른 조건 조정
   const gender = answers.find(a => a.questionId === 6)?.answerText;
   if (gender?.includes('여성')) {
-    approvalProbability += 10; // 여성사업 우대
     recommendedProducts.push('여성창업지원');
   }
 
   // 나이에 따른 조건 조정
   const age = answers.find(a => a.questionId === 7)?.answerText;
   if (age?.includes('만39세이하')) {
-    approvalProbability += 15; // 젊은 창업자 우대
     recommendedProducts.push('청년창업지원');
   }
 
   // 학력에 따른 조건 조정
   const education = answers.find(a => a.questionId === 8)?.answerText;
   if (education?.includes('대학원 졸업')) {
-    approvalProbability += 10; // 고학력 우대
     recommendedProducts.push('고학력창업지원');
   }
 
   // 직업분야에 따른 조건 조정
   const job = answers.find(a => a.questionId === 9)?.answerText;
   if (job?.includes('IT업') || job?.includes('기술직')) {
-    approvalProbability += 10; // IT/기술분야 우대
     recommendedProducts.push('IT기술지원');
   }
 
-  // 승인 가능성 범위 제한
-  approvalProbability = Math.max(30, Math.min(95, approvalProbability));
-
-  summary = `입력해주신 정보를 바탕으로 정부정책지원 기술특허개발 가능여부와 자금확보 가능성을 분석합니다. ${supportAmountMin}만원~${supportAmountMax}만원 정부지원이 가능하며, 승인 가능성은 ${approvalProbability}%로 추정됩니다. 대출 지원확률은 ${loanSupportProbability}%입니다. 기술특허개발, 제조, IT 시제품개발, 앱웹개발을 포함한 토탈 원스톱 솔루션 지원이 가능합니다.`;
+  summary = `입력해주신 정보를 바탕으로 정부정책지원 기술특허개발 가능여부와 자금확보 가능성을 분석합니다. ${supportAmountMin}만원~${supportAmountMax}만원 정부지원이 가능하며, 대출 지원확률은 ${loanSupportProbability}%입니다. 기술특허개발, 제조, IT 시제품개발, 앱웹개발을 포함한 토탈 원스톱 솔루션 지원이 가능합니다.`;
 
   return {
     supportAmountMin,
     supportAmountMax,
-    approvalProbability,
     loanSupportProbability,
     recommendedProducts,
     summary

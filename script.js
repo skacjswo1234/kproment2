@@ -628,7 +628,7 @@ async function generateConsultationResult() {
 function calculateDefaultResult() {
   let supportAmountMin = 5000;
   let supportAmountMax = 10000;
-  let approvalProbability = 70;
+  let loanSupportProbability = 95; // 대출 지원확률
   let recommendedProducts = ['정부지원사업', '창업자금지원', '기술개발지원'];
   
   // 답변에 따른 조건 조정
@@ -636,91 +636,69 @@ function calculateDefaultResult() {
   if (businessStatus?.includes('사업자 등록 한적없습니다')) {
     supportAmountMin = 3000;
     supportAmountMax = 5000;
-    approvalProbability = 90; // 예비창업자 우대
     recommendedProducts = ['예비창업자 지원사업', '스타트업 지원', '정부지원사업'];
   } else if (businessStatus?.includes('3년 미만')) {
     supportAmountMin = 5000;
     supportAmountMax = 10000;
-    approvalProbability = 85;
     recommendedProducts = ['초기창업자 지원', '정부지원사업', '기술개발지원'];
   } else if (businessStatus?.includes('3년 이상')) {
     supportAmountMin = 3000;
     supportAmountMax = 8000;
-    approvalProbability = 75;
     recommendedProducts = ['기존사업자 지원', '정부지원사업', '기술혁신지원'];
   }
   
   const supportExperience = answers[1];
   if (supportExperience?.includes('지원경험 있습니다') || supportExperience?.includes('합격해서 지원금 받은적이 있습니다')) {
-    approvalProbability += 15;
     supportAmountMax += 2000;
-  } else if (supportExperience?.includes('들어본 적 있습니다')) {
-    approvalProbability += 5;
   }
   
   const businessItem = answers[2];
   if (businessItem?.includes('생각하고있는 아이템 있습니다')) {
-    approvalProbability += 10;
     recommendedProducts.push('아이템개발지원');
   }
   
   const region = answers[3];
-  if (region?.includes('서울') || region?.includes('수도권')) {
-    approvalProbability += 5; // 수도권 우대
-  } else if (region?.includes('제주') || region?.includes('강원')) {
-    approvalProbability += 10; // 지역균형발전 우대
+  if (region?.includes('제주') || region?.includes('강원')) {
+    // 지역균형발전 우대
   }
   
+  // 대출이력에 따른 지원확률 계산
   const loanHistory = answers[4];
-  let loanSupportProbability = 95; // 기본 대출 지원확률
-  
   if (loanHistory?.includes('총1천만원 미만')) {
     loanSupportProbability = 95;
-    approvalProbability += 10; // 대출이력이 적으면 우대
   } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
     loanSupportProbability = 90;
-    approvalProbability += 5;
   } else if (loanHistory?.includes('총3천만원 이상~5천만원 미만')) {
     loanSupportProbability = 85;
-    approvalProbability += 2;
   } else if (loanHistory?.includes('총5천만원 이상~1억원 미만')) {
     loanSupportProbability = 80;
-    approvalProbability -= 2;
   } else if (loanHistory?.includes('총1억원 이상')) {
     loanSupportProbability = 70;
-    approvalProbability -= 15; // 대출이력이 많으면 불리
   }
   
   const gender = answers[5];
   if (gender?.includes('여성')) {
-    approvalProbability += 10; // 여성사업 우대
     recommendedProducts.push('여성창업지원');
   }
   
   const age = answers[6];
   if (age?.includes('만39세이하')) {
-    approvalProbability += 15; // 젊은 창업자 우대
     recommendedProducts.push('청년창업지원');
   }
   
   const education = answers[7];
   if (education?.includes('대학원 졸업')) {
-    approvalProbability += 10; // 고학력 우대
     recommendedProducts.push('고학력창업지원');
   }
   
   const job = answers[8];
   if (job?.includes('IT업') || job?.includes('기술직')) {
-    approvalProbability += 10; // IT/기술분야 우대
     recommendedProducts.push('IT기술지원');
   }
-  
-  approvalProbability = Math.max(30, Math.min(95, approvalProbability));
   
   return {
     supportAmountMin,
     supportAmountMax,
-    approvalProbability,
     loanSupportProbability,
     recommendedProducts
   };
@@ -736,7 +714,6 @@ function showResult(result) {
 
 📋 <strong>상담 결과 요약:</strong>
 • 정부지원 가능자금: 최저 1억원 ~ 최대 3억원 예비창업지원
-• 지원확률: ${result.approvalProbability}%
 • 대출 지원확률: ${loanSupportRate}%
 • 추천 지원사업: ${result.recommendedProducts.join(', ')}
 • 기술특허개발, 제조, IT 시제품개발, 앱웹개발 지원 가능
