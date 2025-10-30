@@ -871,6 +871,19 @@ async function handleBookConsultation() {
   }
   
   try {
+    // 모든 답변 데이터를 한 번에 전송
+    const allAnswers = Object.entries(answers).map(([questionId, answerText], index) => {
+      const question = questions[index];
+      return {
+        questionId: question.id,
+        questionText: question.text,
+        answerText: answerText,
+        answerCategory: question.category
+      };
+    });
+    
+    console.log('전송할 전체 답변 데이터:', allAnswers);
+    
     const response = await fetch('/api/book-consultation', {
       method: 'POST',
       headers: {
@@ -881,7 +894,8 @@ async function handleBookConsultation() {
         name,
         phone,
         email: '', // 이메일은 선택사항이므로 빈 값
-        consultationType: 'phone'
+        consultationType: 'phone',
+        allAnswers: allAnswers // 전체 답변 데이터 추가
       })
     });
     
