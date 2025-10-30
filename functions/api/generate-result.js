@@ -5,6 +5,9 @@ export async function onRequestPost(context) {
   try {
     const { sessionId, answers } = await request.json();
     
+    console.log('받은 answers:', answers); // 디버깅용
+    console.log('questionId 5번 답변:', answers.find(a => a.questionId === 5)); // 디버깅용
+    
     if (!sessionId || !answers) {
       return new Response(JSON.stringify({ error: '필수 필드가 누락되었습니다.' }), {
         status: 400,
@@ -14,6 +17,8 @@ export async function onRequestPost(context) {
 
     // 답변 분석하여 대출 조건 계산
     const loanConditions = calculateLoanConditions(answers);
+    
+    console.log('계산된 loanConditions:', loanConditions); // 디버깅용
     
     // 상담 결과 저장
     const result = await env['kproment2-db'].prepare(

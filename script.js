@@ -644,18 +644,23 @@ async function generateConsultationResult() {
   loadingOverlay.classList.remove('hidden');
   
   try {
+    const requestData = {
+      sessionId,
+      answers: Object.entries(answers).map(([questionId, answerText]) => ({
+        questionId: parseInt(questionId),
+        answerText
+      }))
+    };
+    
+    console.log('API 요청 데이터:', requestData); // 디버깅용
+    console.log('answers 객체:', answers); // 디버깅용
+    
     const response = await fetch('/api/generate-result', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        sessionId,
-        answers: Object.entries(answers).map(([questionId, answerText]) => ({
-          questionId: parseInt(questionId),
-          answerText
-        }))
-      })
+      body: JSON.stringify(requestData)
     });
     
     if (response.ok) {
