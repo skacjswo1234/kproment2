@@ -721,16 +721,16 @@ function calculateDefaultResult() {
   const loanHistory = answers[4];
   console.log('대출이력 답변:', loanHistory); // 디버깅용
   
-  // 정확한 매칭을 위해 긴 문자열부터 체크
-  if (loanHistory?.includes('총5천만원 이상~1억원 미만')) {
+  // 정확한 매칭
+  if (loanHistory === '총5천만원 이상~1억원 미만') {
     loanSupportProbability = 80;
-  } else if (loanHistory?.includes('총3천만원 이상~5천만원 미만')) {
+  } else if (loanHistory === '총3천만원 이상~5천만원 미만') {
     loanSupportProbability = 85;
-  } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
+  } else if (loanHistory === '총1천만원 이상~3천만원 미만') {
     loanSupportProbability = 90;
-  } else if (loanHistory?.includes('총1억원 이상')) {
+  } else if (loanHistory === '총1억원 이상') {
     loanSupportProbability = 70;
-  } else if (loanHistory?.includes('총1천만원 미만')) {
+  } else if (loanHistory === '총1천만원 미만') {
     loanSupportProbability = 95;
   } else {
     console.log('대출이력 매칭 실패:', loanHistory); // 디버깅용
