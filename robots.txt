@@ -8,5 +8,5 @@ Disallow: /*.sql
 Disallow: /*.toml
 
 # Sitemap location
-Sitemap: https://kproment.com/sitemap.xml
+Sitemap: https://kstarting.com/sitemap.xml
 
