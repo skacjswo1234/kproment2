@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin-script.js
+Disallow: /admin-styles.css
+Disallow: /functions/
+Disallow: /*.sql
+Disallow: /*.toml
+
+# Sitemap location
+Sitemap: https://kproment.com/sitemap.xml
+
