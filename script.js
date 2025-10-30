@@ -456,6 +456,13 @@ function setupPhoneInputEvents() {
         
         // 3분 타이머 시작
         startVerificationTimer();
+        
+        // 인증번호 입력란에 포커스
+        setTimeout(() => {
+          if (verificationCodeInput) {
+            verificationCodeInput.focus();
+          }
+        }, 100);
       } else {
         let errorMessage = '인증번호 발송 실패';
         try {
@@ -714,16 +721,17 @@ function calculateDefaultResult() {
   const loanHistory = answers[4];
   console.log('대출이력 답변:', loanHistory); // 디버깅용
   
-  if (loanHistory?.includes('총1천만원 미만')) {
-    loanSupportProbability = 95;
-  } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
-    loanSupportProbability = 90;
+  // 정확한 매칭을 위해 긴 문자열부터 체크
+  if (loanHistory?.includes('총5천만원 이상~1억원 미만')) {
+    loanSupportProbability = 80;
   } else if (loanHistory?.includes('총3천만원 이상~5천만원 미만')) {
     loanSupportProbability = 85;
-  } else if (loanHistory?.includes('총5천만원 이상~1억원 미만')) {
-    loanSupportProbability = 80;
+  } else if (loanHistory?.includes('총1천만원 이상~3천만원 미만')) {
+    loanSupportProbability = 90;
   } else if (loanHistory?.includes('총1억원 이상')) {
     loanSupportProbability = 70;
+  } else if (loanHistory?.includes('총1천만원 미만')) {
+    loanSupportProbability = 95;
   } else {
     console.log('대출이력 매칭 실패:', loanHistory); // 디버깅용
   }
