@@ -3,6 +3,23 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   
   try {
+    // D1 바인딩 체크
+    if (!env['kproment2-db']) {
+      console.error('D1 데이터베이스 바인딩이 없습니다!');
+      return new Response(JSON.stringify({ 
+        error: 'D1 데이터베이스 바인딩이 설정되지 않았습니다.',
+        detail: 'Cloudflare Pages에서 kproment2-db D1 바인딩을 추가해주세요.'
+      }), {
+        status: 503,
+        headers: { 
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      });
+    }
+    
     const { sessionId, answers } = await request.json();
     
     console.log('받은 answers:', answers); // 디버깅용
@@ -48,9 +65,21 @@ export async function onRequestPost(context) {
 
   } catch (error) {
     console.error('상담 결과 생성 오류:', error);
-    return new Response(JSON.stringify({ error: '서버 오류가 발생했습니다.' }), {
+    console.error('에러 스택:', error.stack);
+    console.error('에러 메시지:', error.message);
+    
+    return new Response(JSON.stringify({ 
+      error: '서버 오류가 발생했습니다.',
+      detail: error.message,
+      stack: error.stack
+    }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      }
     });
   }
 }
@@ -153,4 +182,16 @@ function calculateLoanConditions(answers) {
     recommendedProducts,
     summary
   };
+}
+
+// CORS를 위한 OPTIONS 요청 처리
+export async function onRequestOptions(context) {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  });
 }
