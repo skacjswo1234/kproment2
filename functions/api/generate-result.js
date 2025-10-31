@@ -142,8 +142,12 @@ function calculateLoanConditions(answers) {
   // 대출이력에 따른 지원확률 계산 (answerIndex 기반)
   const loanHistoryAnswer = answers.find(a => a.questionId === 5 || a.questionId === '5');
   const loanHistoryIndex = loanHistoryAnswer?.answerIndex;
-  console.log('대출이력 답변:', loanHistoryAnswer); // 디버깅용
-  console.log('대출이력 인덱스:', loanHistoryIndex); // 디버깅용
+  const loanHistoryText = loanHistoryAnswer?.answerText;
+  console.log('=== 대출이력 디버깅 ===');
+  console.log('전체 답변:', loanHistoryAnswer);
+  console.log('answerText:', loanHistoryText);
+  console.log('answerIndex:', loanHistoryIndex);
+  console.log('answerIndex 타입:', typeof loanHistoryIndex);
   
   // answerIndex로 매칭 (0: 총1천만원 미만, 1: 1~3천만원, 2: 3~5천만원, 3: 5천만~1억, 4: 1억 이상)
   if (loanHistoryIndex === 0) {

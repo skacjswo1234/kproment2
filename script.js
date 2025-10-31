@@ -594,6 +594,14 @@ function startVerificationTimer() {
 // 답변 처리
 async function handleAnswer(answer, answerIndex = null) {
   const question = questions[currentQuestionIndex];
+  
+  console.log('=== handleAnswer 호출 ===');
+  console.log('질문 ID:', question.id);
+  console.log('질문:', question.text);
+  console.log('답변 텍스트:', answer);
+  console.log('답변 인덱스:', answerIndex);
+  console.log('답변 인덱스 타입:', typeof answerIndex);
+  
   answers[currentQuestionIndex] = {
     text: answer,
     index: answerIndex
@@ -688,8 +696,10 @@ async function generateConsultationResult() {
       }))
     };
     
-    console.log('API 요청 데이터:', requestData); // 디버깅용
-    console.log('answers 객체:', answers); // 디버깅용
+    console.log('=== API 요청 데이터 ===');
+    console.log('전체 requestData:', JSON.stringify(requestData, null, 2));
+    console.log('질문 5번 답변:', requestData.answers.find(a => a.questionId === 5));
+    console.log('answers 객체:', answers);
     
     const response = await fetch('/api/generate-result', {
       method: 'POST',
