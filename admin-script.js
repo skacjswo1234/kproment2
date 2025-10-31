@@ -191,14 +191,19 @@ function displayInquiries() {
     return;
   }
   
-  inquiriesList.innerHTML = inquiries.map(inquiry => `
+  inquiriesList.innerHTML = inquiries.map((inquiry, index) => `
     <div class="inquiry-card" onclick="showInquiryDetail('${inquiry.sessionId}')">
       <div class="inquiry-header">
-        <div class="inquiry-session">세션: ${inquiry.sessionId}</div>
+        <div class="inquiry-session">
+          <strong>번호 #${inquiry.bookingId || (inquiries.length - index)}</strong> | 
+          ${inquiry.name} | 
+          ${inquiry.phone}
+        </div>
         <div class="inquiry-date">${formatDate(inquiry.createdAt)}</div>
       </div>
       <div class="inquiry-summary">
         총 ${inquiry.totalQuestions}개 질문에 답변 완료
+        ${inquiry.email ? ` | 이메일: ${inquiry.email}` : ''}
       </div>
       <div class="inquiry-answers">
         ${inquiry.answers.slice(0, 3).map(answer => `
@@ -222,8 +227,12 @@ function showInquiryDetail(sessionId) {
   inquiryDetails.innerHTML = `
     <div class="inquiry-detail">
       <div class="detail-header">
-        <h3>세션: ${inquiry.sessionId}</h3>
-        <p>등록일: ${formatDate(inquiry.createdAt)}</p>
+        <h3>번호 #${inquiry.bookingId || 'N/A'} - ${inquiry.name}</h3>
+        <p><strong>전화번호:</strong> ${inquiry.phone}</p>
+        ${inquiry.email ? `<p><strong>이메일:</strong> ${inquiry.email}</p>` : ''}
+        <p><strong>등록일:</strong> ${formatDate(inquiry.createdAt)}</p>
+        <p><strong>상담유형:</strong> ${getConsultationType(inquiry.consultationType)}</p>
+        <p><strong>상태:</strong> ${getStatusLabel(inquiry.status)}</p>
         <p>총 ${inquiry.totalQuestions}개 질문에 답변</p>
       </div>
       <div class="detail-answers">
@@ -242,6 +251,27 @@ function showInquiryDetail(sessionId) {
   `;
   
   inquiryModal.style.display = 'block';
+}
+
+// 상담 유형 레이블
+function getConsultationType(type) {
+  const types = {
+    'phone': '전화상담',
+    'meeting': '대면상담',
+    'video': '화상상담'
+  };
+  return types[type] || '전화상담';
+}
+
+// 상태 레이블
+function getStatusLabel(status) {
+  const labels = {
+    'pending': '대기중',
+    'confirmed': '확인완료',
+    'completed': '상담완료',
+    'cancelled': '취소됨'
+  };
+  return labels[status] || '대기중';
 }
 
 // 모달 닫기

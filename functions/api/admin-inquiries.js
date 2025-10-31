@@ -30,15 +30,52 @@ export async function onRequestPost(context) {
       ORDER BY created_at DESC
     `).all();
 
+    // 예약 정보 조회
+    const bookingsResult = await db.prepare(`
+      SELECT 
+        id,
+        session_id,
+        name,
+        phone,
+        email,
+        consultation_type,
+        status,
+        created_at
+      FROM consultation_bookings
+      ORDER BY created_at DESC
+    `).all();
+
+    // 예약 정보를 세션ID로 매핑
+    const bookingsBySession = {};
+    bookingsResult.results.forEach(booking => {
+      bookingsBySession[booking.session_id] = {
+        bookingId: booking.id,
+        name: booking.name,
+        phone: booking.phone,
+        email: booking.email,
+        consultationType: booking.consultation_type,
+        status: booking.status,
+        bookingDate: booking.created_at
+      };
+    });
+
     // 세션별로 그룹화
     const inquiriesBySession = {};
     result.results.forEach(row => {
       const sessionId = row.session_id;
       if (!inquiriesBySession[sessionId]) {
+        const booking = bookingsBySession[sessionId] || {};
         inquiriesBySession[sessionId] = {
           sessionId: sessionId,
+          bookingId: booking.bookingId || null,
+          name: booking.name || '미등록',
+          phone: booking.phone || '미등록',
+          email: booking.email || '',
+          consultationType: booking.consultationType || 'phone',
+          status: booking.status || 'pending',
           answers: [],
           createdAt: row.created_at,
+          bookingDate: booking.bookingDate || null,
           totalQuestions: 0
         };
       }
