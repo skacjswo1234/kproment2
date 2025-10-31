@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
       // 솔라피 API 설정 (환경변수에서 가져오기)
       const SOLAPI_API_KEY = env.SOLAPI_API_KEY || 'NCSXSG86GBJ31VDX';
       const SOLAPI_API_SECRET = env.SOLAPI_API_SECRET || 'WIMT8DAV6UTPM9XDG1KDEBINQVB4Z2FT';
-      const SOLAPI_SENDER = env.SOLAPI_SENDER || '01099820085';
+      const SOLAPI_SENDER = env.SOLAPI_SENDER || '18770994';
       
       console.log('API 키 확인:', { 
         hasKey: !!SOLAPI_API_KEY, 
