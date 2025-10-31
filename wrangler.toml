@@ -29,7 +29,7 @@ preview_id = "f575456dd6c94974bfcc2335fc2f34f8"
 [env.production.vars]
 SOLAPI_API_KEY = "NCSXSG86GBJ31VDX"
 SOLAPI_API_SECRET = "WIMT8DAV6UTPM9XDG1KDEBINQVB4Z2FT"
-SOLAPI_SENDER = "01099820085"
+SOLAPI_SENDER = "18770994"
 
 [build]
 command = "echo 'Static site - no build needed'"
