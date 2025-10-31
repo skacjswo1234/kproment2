@@ -689,11 +689,14 @@ async function generateConsultationResult() {
   try {
     const requestData = {
       sessionId,
-      answers: Object.entries(answers).map(([questionId, answer]) => ({
-        questionId: parseInt(questionId),
-        answerText: answer.text,
-        answerIndex: answer.index
-      }))
+      answers: Object.entries(answers).map(([questionIndex, answer]) => {
+        const question = questions[parseInt(questionIndex)];
+        return {
+          questionId: question.id, // 실제 질문 ID 사용
+          answerText: answer.text,
+          answerIndex: answer.index
+        };
+      })
     };
     
     console.log('=== API 요청 데이터 ===');
@@ -886,10 +889,10 @@ async function handleBookConsultation() {
   
   try {
     // 모든 답변 데이터를 한 번에 전송
-    const allAnswers = Object.entries(answers).map(([questionId, answer], index) => {
-      const question = questions[index];
+    const allAnswers = Object.entries(answers).map(([questionIndex, answer]) => {
+      const question = questions[parseInt(questionIndex)];
       return {
-        questionId: question.id,
+        questionId: question.id, // 실제 질문 ID 사용
         questionText: question.text,
         answerText: answer.text,
         answerIndex: answer.index,
