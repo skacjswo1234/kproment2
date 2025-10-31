@@ -202,13 +202,13 @@ function showQuestion() {
         </svg>
       `;
       
-      button.addEventListener('click', () => handleAnswer(option));
+      button.addEventListener('click', () => handleAnswer(option, index));
       
       // 키보드 이벤트: Enter, Space로 선택
       button.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
-          handleAnswer(option);
+          handleAnswer(option, index);
         }
         
         // 방향키로 버튼 이동
@@ -592,9 +592,12 @@ function startVerificationTimer() {
 }
 
 // 답변 처리
-async function handleAnswer(answer) {
+async function handleAnswer(answer, answerIndex = null) {
   const question = questions[currentQuestionIndex];
-  answers[currentQuestionIndex] = answer;
+  answers[currentQuestionIndex] = {
+    text: answer,
+    index: answerIndex
+  };
   appendUserMessageBubble(answer);
   
   // 답변은 메모리에만 저장 (최종 모달에서 한 번에 저장)
@@ -678,9 +681,10 @@ async function generateConsultationResult() {
   try {
     const requestData = {
       sessionId,
-      answers: Object.entries(answers).map(([questionId, answerText]) => ({
+      answers: Object.entries(answers).map(([questionId, answer]) => ({
         questionId: parseInt(questionId),
-        answerText
+        answerText: answer.text,
+        answerIndex: answer.index
       }))
     };
     
@@ -862,8 +866,8 @@ function hideModal(modalId) {
 // 상담 예약 처리
 async function handleBookConsultation() {
   // 대화에서 이미 받은 정보 사용
-  const name = answers[9] || '고객'; // 질문 10번: 성함
-  const phone = answers[10] || ''; // 질문 11번: 휴대폰번호
+  const name = (answers[9] && answers[9].text) || '고객'; // 질문 10번: 성함
+  const phone = (answers[10] && answers[10].text) || ''; // 질문 11번: 휴대폰번호
   
   if (!phone) {
     showErrorModal('휴대폰번호 정보가 없습니다. 다시 시작해주세요.');
@@ -872,12 +876,13 @@ async function handleBookConsultation() {
   
   try {
     // 모든 답변 데이터를 한 번에 전송
-    const allAnswers = Object.entries(answers).map(([questionId, answerText], index) => {
+    const allAnswers = Object.entries(answers).map(([questionId, answer], index) => {
       const question = questions[index];
       return {
         questionId: question.id,
         questionText: question.text,
-        answerText: answerText,
+        answerText: answer.text,
+        answerIndex: answer.index,
         answerCategory: question.category
       };
     });

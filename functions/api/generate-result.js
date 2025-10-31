@@ -139,23 +139,25 @@ function calculateLoanConditions(answers) {
     // 지역균형발전 우대
   }
 
-  // 대출이력에 따른 지원확률 계산
-  const loanHistory = answers.find(a => a.questionId === 5 || a.questionId === '5')?.answerText;
-  console.log('대출이력 답변:', loanHistory); // 디버깅용
+  // 대출이력에 따른 지원확률 계산 (answerIndex 기반)
+  const loanHistoryAnswer = answers.find(a => a.questionId === 5 || a.questionId === '5');
+  const loanHistoryIndex = loanHistoryAnswer?.answerIndex;
+  console.log('대출이력 답변:', loanHistoryAnswer); // 디버깅용
+  console.log('대출이력 인덱스:', loanHistoryIndex); // 디버깅용
   
-  // 정확한 매칭 - 전체 문자열로 비교
-  if (loanHistory === '총1천만원 미만') {
+  // answerIndex로 매칭 (0: 총1천만원 미만, 1: 1~3천만원, 2: 3~5천만원, 3: 5천만~1억, 4: 1억 이상)
+  if (loanHistoryIndex === 0) {
     loanSupportProbability = 95;
-  } else if (loanHistory === '총1천만원 이상~3천만원 미만') {
+  } else if (loanHistoryIndex === 1) {
     loanSupportProbability = 90;
-  } else if (loanHistory === '총3천만원 이상~5천만원 미만') {
+  } else if (loanHistoryIndex === 2) {
     loanSupportProbability = 85;
-  } else if (loanHistory === '총5천만원 이상~1억원 미만') {
+  } else if (loanHistoryIndex === 3) {
     loanSupportProbability = 80;
-  } else if (loanHistory === '총1억원 이상') {
+  } else if (loanHistoryIndex === 4) {
     loanSupportProbability = 70;
   } else {
-    console.log('대출이력 매칭 실패:', loanHistory); // 디버깅용
+    console.log('대출이력 매칭 실패 - answerIndex:', loanHistoryIndex); // 디버깅용
     loanSupportProbability = 80; // 기본값 설정
   }
   
