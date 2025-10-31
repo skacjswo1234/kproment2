@@ -37,6 +37,19 @@ export async function onRequestPost(context) {
     
     console.log('계산된 loanConditions:', loanConditions); // 디버깅용
     
+    // 세션 존재 확인 또는 생성 (FOREIGN KEY constraint 에러 방지)
+    const sessionCheck = await env['kproment2-db'].prepare(
+      'SELECT id FROM consultation_sessions WHERE session_id = ?'
+    ).bind(sessionId).first();
+    
+    if (!sessionCheck) {
+      console.log('세션이 존재하지 않아 생성합니다:', sessionId);
+      // 세션이 없으면 생성
+      await env['kproment2-db'].prepare(
+        'INSERT INTO consultation_sessions (session_id, status) VALUES (?, ?)'
+      ).bind(sessionId, 'in_progress').run();
+    }
+    
     // 상담 결과 저장
     const result = await env['kproment2-db'].prepare(
       'INSERT INTO consultation_results (session_id, support_amount_min, support_amount_max, approval_probability, recommended_programs, support_summary) VALUES (?, ?, ?, ?, ?, ?)'
