@@ -934,6 +934,9 @@ async function handleBookConsultation() {
       sessionId,
       consultationType: 'phone',
       origin: window.location.origin,
+      email: 'no-reply@kstarting.com',
+      _replyto: 'no-reply@kstarting.com',
+      subject: '[케이프로미넌트] 상담 신청',
       message: `상담자: ${name}\n휴대폰: ${phone}\n세션 ID: ${sessionId}\n요청 도메인: ${window.location.origin}\n\n[상담 답변]\n${formattedAnswers}`
     };
 
