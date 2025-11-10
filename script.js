@@ -916,18 +916,50 @@ async function handleBookConsultation() {
         allAnswers: allAnswers // 전체 답변 데이터 추가
       })
     });
-    
-    if (response.ok) {
-      showSuccessModal();
-      resultModal.classList.add('hidden');
-      
-      // 3초 후 자동으로 초기 단계로 돌아가기
-      setTimeout(() => {
-        resetChat();
-      }, 3000);
-    } else {
+
+    if (!response.ok) {
       showErrorModal('상담 예약 중 오류가 발생했습니다.');
+      return;
     }
+
+    const formattedAnswers = allAnswers
+      .map((item) => {
+        return `Q${item.questionId} (${item.answerCategory})\n${item.questionText}\n답변: ${item.answerText}`;
+      })
+      .join('\n\n');
+
+    const formspreePayload = {
+      name,
+      phone,
+      sessionId,
+      consultationType: 'phone',
+      origin: window.location.origin,
+      message: `상담자: ${name}\n휴대폰: ${phone}\n세션 ID: ${sessionId}\n요청 도메인: ${window.location.origin}\n\n[상담 답변]\n${formattedAnswers}`
+    };
+
+    const formspreeResponse = await fetch('https://formspree.io/f/xnnlayrg', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(formspreePayload)
+    });
+
+    if (!formspreeResponse.ok) {
+      const errorText = await formspreeResponse.text();
+      console.error('Formspree 전송 실패:', errorText);
+      showErrorModal('문의 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
+    showSuccessModal();
+    resultModal.classList.add('hidden');
+    
+    // 3초 후 자동으로 초기 단계로 돌아가기
+    setTimeout(() => {
+      resetChat();
+    }, 3000);
   } catch (error) {
     console.error('상담 예약 오류:', error);
     showErrorModal('상담 예약 중 오류가 발생했습니다.');
