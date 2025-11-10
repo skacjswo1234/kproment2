@@ -922,12 +922,6 @@ async function handleBookConsultation() {
       return;
     }
 
-    const formattedAnswers = allAnswers
-      .map((item) => {
-        return `Q${item.questionId} (${item.answerCategory})\n${item.questionText}\n답변: ${item.answerText}`;
-      })
-      .join('\n\n');
-
     const formspreePayload = {
       name,
       phone,
@@ -937,7 +931,7 @@ async function handleBookConsultation() {
       email: 'no-reply@kstarting.com',
       _replyto: 'no-reply@kstarting.com',
       subject: '[케이프로미넌트] 상담 신청',
-      message: `상담자: ${name}\n휴대폰: ${phone}\n세션 ID: ${sessionId}\n요청 도메인: ${window.location.origin}\n\n[상담 답변]\n${formattedAnswers}`
+      message: `새 상담 신청이 접수되었습니다.\n\n이름: ${name}\n연락처: ${phone}\n세션 ID: ${sessionId}\n접수 도메인: ${window.location.origin}`
     };
 
     const formspreeResponse = await fetch('https://formspree.io/f/xnnlayrg', {
