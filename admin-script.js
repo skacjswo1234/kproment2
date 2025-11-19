@@ -337,13 +337,26 @@ function handleLogout() {
 
 // 날짜 포맷팅
 function formatDate(dateString) {
-  const date = new Date(dateString);
+  if (!dateString) return '';
+  
+  // UTC 시간 문자열인 경우를 처리
+  let date;
+  if (typeof dateString === 'string' && dateString.includes('T') && !dateString.includes('+') && !dateString.includes('Z')) {
+    // 타임존 정보가 없는 경우 UTC로 간주하고 한국 시간으로 변환
+    date = new Date(dateString + 'Z');
+  } else {
+    date = new Date(dateString);
+  }
+  
+  // 한국 시간대(Asia/Seoul)로 변환하여 표시
   return date.toLocaleString('ko-KR', {
+    timeZone: 'Asia/Seoul',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: false
   });
 }
 
