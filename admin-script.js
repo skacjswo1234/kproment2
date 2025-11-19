@@ -335,20 +335,14 @@ function handleLogout() {
   }
 }
 
-// 날짜 포맷팅
+// 날짜 포맷팅 (서버에서 이미 한국 시간으로 변환된 시간을 표시)
 function formatDate(dateString) {
   if (!dateString) return '';
   
-  // UTC 시간 문자열인 경우를 처리
-  let date;
-  if (typeof dateString === 'string' && dateString.includes('T') && !dateString.includes('+') && !dateString.includes('Z')) {
-    // 타임존 정보가 없는 경우 UTC로 간주하고 한국 시간으로 변환
-    date = new Date(dateString + 'Z');
-  } else {
-    date = new Date(dateString);
-  }
+  // 서버에서 이미 한국 시간으로 변환되어 오므로 그대로 파싱
+  const date = new Date(dateString);
   
-  // 한국 시간대(Asia/Seoul)로 변환하여 표시
+  // 한국 시간대(Asia/Seoul)로 표시
   return date.toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
     year: 'numeric',
