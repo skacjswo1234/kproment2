@@ -45,49 +45,7 @@ export async function onRequestPost(context) {
       ORDER BY created_at DESC
     `).all();
 
-    // UTC 시간을 한국 시간으로 변환하는 함수
-    function convertToKST(utcDateString) {
-      if (!utcDateString) return null;
-      
-      let utcDate;
-      
-      // SQLite에서 반환되는 형식 처리: 'YYYY-MM-DD HH:MM:SS' 또는 'YYYY-MM-DDTHH:MM:SS'
-      if (typeof utcDateString === 'string') {
-        // 이미 Z가 있으면 그대로 사용
-        if (utcDateString.includes('Z')) {
-          utcDate = new Date(utcDateString);
-        } 
-        // 공백으로 구분된 형식 (SQLite 기본 형식)
-        else if (utcDateString.includes(' ')) {
-          // 'YYYY-MM-DD HH:MM:SS' -> 'YYYY-MM-DDTHH:MM:SSZ'로 변환
-          utcDate = new Date(utcDateString.replace(' ', 'T') + 'Z');
-        }
-        // T로 구분된 형식이지만 Z가 없는 경우
-        else if (utcDateString.includes('T')) {
-          utcDate = new Date(utcDateString + 'Z');
-        }
-        // 그 외의 경우
-        else {
-          utcDate = new Date(utcDateString + 'Z');
-        }
-      } else {
-        utcDate = new Date(utcDateString);
-      }
-      
-      // 유효한 날짜인지 확인
-      if (isNaN(utcDate.getTime())) {
-        console.warn('유효하지 않은 날짜:', utcDateString);
-        return utcDateString; // 변환 실패 시 원본 반환
-      }
-      
-      // 한국 시간으로 변환 (UTC+9 = 9시간 추가)
-      const kstDate = new Date(utcDate.getTime() + (9 * 60 * 60 * 1000));
-      
-      // ISO 형식으로 반환 (Z 제거하여 로컬 시간처럼 표시)
-      return kstDate.toISOString().replace('Z', '');
-    }
-
-    // 예약 정보를 세션ID로 매핑
+    // 예약 정보를 세션ID로 매핑 (원본 UTC 시간 그대로 반환)
     const bookingsBySession = {};
     bookingsResult.results.forEach(booking => {
       bookingsBySession[booking.session_id] = {
@@ -97,11 +55,11 @@ export async function onRequestPost(context) {
         email: booking.email,
         consultationType: booking.consultation_type,
         status: booking.status,
-        bookingDate: convertToKST(booking.created_at)
+        bookingDate: booking.created_at
       };
     });
 
-    // 세션별로 그룹화
+    // 세션별로 그룹화 (원본 UTC 시간 그대로 반환)
     const inquiriesBySession = {};
     result.results.forEach(row => {
       const sessionId = row.session_id;
@@ -116,7 +74,7 @@ export async function onRequestPost(context) {
           consultationType: booking.consultationType || 'phone',
           status: booking.status || 'pending',
           answers: [],
-          createdAt: convertToKST(row.created_at),
+          createdAt: row.created_at,
           bookingDate: booking.bookingDate || null,
           totalQuestions: 0
         };
@@ -126,7 +84,7 @@ export async function onRequestPost(context) {
         questionText: row.question_text,
         answerText: row.answer_text,
         answerCategory: row.answer_category,
-        createdAt: convertToKST(row.created_at)
+        createdAt: row.created_at
       });
       inquiriesBySession[sessionId].totalQuestions++;
     });

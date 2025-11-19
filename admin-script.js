@@ -335,15 +335,43 @@ function handleLogout() {
   }
 }
 
-// 날짜 포맷팅 (서버에서 이미 한국 시간으로 변환된 시간을 표시)
+// 날짜 포맷팅 (UTC 시간을 한국 시간으로 변환하여 표시)
 function formatDate(dateString) {
   if (!dateString) return '';
   
-  // 서버에서 이미 한국 시간으로 변환되어 오므로 그대로 파싱
-  const date = new Date(dateString);
+  let utcDate;
   
-  // 한국 시간대(Asia/Seoul)로 표시
-  return date.toLocaleString('ko-KR', {
+  // SQLite에서 반환되는 다양한 형식 처리
+  if (typeof dateString === 'string') {
+    // 이미 Z가 있으면 그대로 사용
+    if (dateString.includes('Z')) {
+      utcDate = new Date(dateString);
+    } 
+    // 공백으로 구분된 형식 (SQLite 기본 형식: 'YYYY-MM-DD HH:MM:SS')
+    else if (dateString.includes(' ')) {
+      // 'YYYY-MM-DD HH:MM:SS' -> 'YYYY-MM-DDTHH:MM:SSZ'로 변환하여 UTC로 인식
+      utcDate = new Date(dateString.replace(' ', 'T') + 'Z');
+    }
+    // T로 구분된 형식이지만 Z가 없는 경우
+    else if (dateString.includes('T')) {
+      utcDate = new Date(dateString + 'Z');
+    }
+    // 그 외의 경우도 UTC로 간주
+    else {
+      utcDate = new Date(dateString + 'Z');
+    }
+  } else {
+    utcDate = new Date(dateString);
+  }
+  
+  // 유효한 날짜인지 확인
+  if (isNaN(utcDate.getTime())) {
+    console.warn('유효하지 않은 날짜:', dateString);
+    return dateString; // 변환 실패 시 원본 반환
+  }
+  
+  // 한국 시간대(Asia/Seoul)로 변환하여 표시
+  return utcDate.toLocaleString('ko-KR', {
     timeZone: 'Asia/Seoul',
     year: 'numeric',
     month: '2-digit',
