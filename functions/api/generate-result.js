@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
     const { sessionId, answers } = await request.json();
     
     console.log('받은 answers:', answers); // 디버깅용
-    console.log('questionId 5번 답변:', answers.find(a => a.questionId === 5)); // 디버깅용
+    console.log('questionId 6번(신용점수) 답변:', answers.find(a => a.questionId === 6)); // 디버깅용
     
     if (!sessionId || !answers) {
       return new Response(JSON.stringify({ error: '필수 필드가 누락되었습니다.' }), {
@@ -133,62 +133,88 @@ function calculateLoanConditions(answers) {
     recommendedProducts.push('아이템개발지원');
   }
 
+  // 국세체납
+  const taxDelinquency = answers.find(a => a.questionId === 4)?.answerText || '';
+
   // 거주지역에 따른 조건 조정
-  const region = answers.find(a => a.questionId === 4)?.answerText;
+  const region = answers.find(a => a.questionId === 5)?.answerText;
   if (region?.includes('제주') || region?.includes('강원')) {
     // 지역균형발전 우대
   }
 
-  // 대출이력에 따른 지원확률 계산 (answerIndex 기반)
-  const loanHistoryAnswer = answers.find(a => a.questionId === 5 || a.questionId === '5');
-  const loanHistoryIndex = loanHistoryAnswer?.answerIndex;
-  const loanHistoryText = loanHistoryAnswer?.answerText;
-  console.log('=== 대출이력 디버깅 ===');
-  console.log('전체 답변:', loanHistoryAnswer);
-  console.log('answerText:', loanHistoryText);
-  console.log('answerIndex:', loanHistoryIndex);
-  console.log('answerIndex 타입:', typeof loanHistoryIndex);
-  
-  // answerIndex로 매칭 (0: 총1천만원 미만, 1: 1~3천만원, 2: 3~5천만원, 3: 5천만~1억, 4: 1억 이상)
-  if (loanHistoryIndex === 0) {
-    loanSupportProbability = 95;
-  } else if (loanHistoryIndex === 1) {
-    loanSupportProbability = 90;
-  } else if (loanHistoryIndex === 2) {
+  // 신용점수(KCB 구간)에 따른 지원확률 — answerIndex 0:500대 ~ 4:900대
+  const creditAnswer = answers.find(a => a.questionId === 6 || a.questionId === '6');
+  const creditIndex = creditAnswer?.answerIndex;
+  const creditText = creditAnswer?.answerText || '';
+  console.log('=== 신용점수 디버깅 ===');
+  console.log('answerIndex:', creditIndex, 'answerText:', creditText);
+
+  if (creditIndex === 0) {
+    loanSupportProbability = 65;
+  } else if (creditIndex === 1) {
+    loanSupportProbability = 75;
+  } else if (creditIndex === 2) {
     loanSupportProbability = 85;
-  } else if (loanHistoryIndex === 3) {
-    loanSupportProbability = 80;
-  } else if (loanHistoryIndex === 4) {
-    loanSupportProbability = 70;
+  } else if (creditIndex === 3) {
+    loanSupportProbability = 90;
+  } else if (creditIndex === 4) {
+    loanSupportProbability = 95;
   } else {
-    console.log('대출이력 매칭 실패 - answerIndex:', loanHistoryIndex); // 디버깅용
-    loanSupportProbability = 80; // 기본값 설정
+    if (creditText.includes('500')) loanSupportProbability = 65;
+    else if (creditText.includes('600')) loanSupportProbability = 75;
+    else if (creditText.includes('700')) loanSupportProbability = 85;
+    else if (creditText.includes('800')) loanSupportProbability = 90;
+    else if (creditText.includes('900')) loanSupportProbability = 95;
+    else {
+      console.log('신용점수 매칭 실패');
+      loanSupportProbability = 80;
+    }
   }
-  
-  console.log('대출 지원확률:', loanSupportProbability); // 디버깅용
+
+  if (taxDelinquency.includes('체납이 있습니다.') && !taxDelinquency.includes('상환가능')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 15);
+  } else if (taxDelinquency.includes('상환가능')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 5);
+  }
+
+  console.log('대출 지원확률(신용·체납 반영):', loanSupportProbability);
 
   // 성별에 따른 조건 조정
-  const gender = answers.find(a => a.questionId === 6)?.answerText;
+  const gender = answers.find(a => a.questionId === 7)?.answerText;
   if (gender?.includes('여성')) {
     recommendedProducts.push('여성창업지원');
   }
 
   // 나이에 따른 조건 조정
-  const age = answers.find(a => a.questionId === 7)?.answerText;
-  if (age?.includes('만39세이하')) {
+  const age = answers.find(a => a.questionId === 8)?.answerText;
+  if (age?.includes('이하')) {
     recommendedProducts.push('청년창업지원');
   }
 
+  // 회생·파산·연체
+  const creditEvent = answers.find(a => a.questionId === 9)?.answerText || '';
+  if (creditEvent.includes('네.있습니다')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 20);
+  } else if (creditEvent.includes('3년 넘었습니다')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 5);
+  }
+
   // 학력에 따른 조건 조정
-  const education = answers.find(a => a.questionId === 8)?.answerText;
-  if (education?.includes('대학원 졸업')) {
+  const education = answers.find(a => a.questionId === 10)?.answerText;
+  if (education?.includes('대학원')) {
     recommendedProducts.push('고학력창업지원');
   }
 
   // 직업분야에 따른 조건 조정
-  const job = answers.find(a => a.questionId === 9)?.answerText;
+  const job = answers.find(a => a.questionId === 11)?.answerText;
   if (job?.includes('IT업') || job?.includes('기술직')) {
     recommendedProducts.push('IT기술지원');
+  }
+
+  // 기존대출내역(서술) — 다액·다기관 키워드 시 보수적 조정
+  const loanDetail = answers.find(a => a.questionId === 13)?.answerText || '';
+  if (loanDetail && (loanDetail.includes('억') || loanDetail.includes('다수'))) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 5);
   }
 
   summary = `입력해주신 정보를 바탕으로 정부정책지원 기술특허개발 가능여부와 자금확보 가능성을 분석합니다. ${supportAmountMin}만원~${supportAmountMax}만원 정부지원이 가능하며, 대출 지원확률은 ${loanSupportProbability}%입니다. 기술특허개발, 제조, IT 시제품개발, 앱웹개발을 포함한 토탈 원스톱 솔루션 지원이 가능합니다.`;

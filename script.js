@@ -36,7 +36,17 @@ const questions = [
   },
   {
     id: 4,
-    text: "4.등본상 거주지가 어디 지역인가요?\n*경쟁률이 낮은 지역으로 빠르게 진행가능합니다.",
+    text: "4.현재 국세체납 여부",
+    options: [
+      "체납이 있습니다.",
+      "체납이 없습니다.",
+      "체납이 있지만 상환가능합니다."
+    ],
+    category: "국세체납"
+  },
+  {
+    id: 5,
+    text: "5.등본상 거주지가 어디 지역인가요?\n*경쟁률이 낮은 지역으로 빠르게 진행가능합니다.",
     options: [
       "서울",
       "수도권",
@@ -52,20 +62,20 @@ const questions = [
     category: "거주지역"
   },
   {
-    id: 5,
-    text: "5.기존 대출이력은 어떻게 되나요?",
+    id: 6,
+    text: "6.신용점수가 어떻게 되세요(KCB기준)",
     options: [
-      "총1천만원 미만",
-      "총1천만원 이상~3천만원 미만",
-      "총3천만원 이상~5천만원 미만",
-      "총5천만원 이상~1억원 미만",
-      "총1억원 이상"
+      "500점대",
+      "600점대",
+      "700점대",
+      "800점대",
+      "900점대"
     ],
-    category: "대출이력"
+    category: "신용점수"
   },
   {
-    id: 6,
-    text: "6.성별을 선택해주세요\n*여성사업 우대 지원있습니다.",
+    id: 7,
+    text: "7.성별을 선택해주세요\n*여성사업 우대 지원있습니다.",
     options: [
       "남성",
       "여성"
@@ -73,8 +83,8 @@ const questions = [
     category: "성별"
   },
   {
-    id: 7,
-    text: "7.만 나이를 선택해주세요\n*만39세 이하 정부우대조건 지원사업 기회 많습니다.",
+    id: 8,
+    text: "8.만 나이를 선택해주세요\n*만39세 이하 정부우대조건 지원사업 기회 많습니다.",
     options: [
       "만25세이하",
       "만30세이하",
@@ -85,32 +95,51 @@ const questions = [
     category: "나이"
   },
   {
-    id: 8,
-    text: "8.최종 학력과 전공을 작성해 주세요\n\n예:00대학교 00과",
+    id: 9,
+    text: "9.과거포함 회생,파산,연체이력이 있나요?",
+    options: [
+      "아니요.없습니다",
+      "네.있습니다",
+      "이력처리 3년 넘었습니다."
+    ],
+    category: "회생파산연체"
+  },
+  {
+    id: 10,
+    text: "10.최종 학력과 전공을 작성해 주세요\n\n예:00대학교 00과",
     options: [],
     category: "학력",
     inputType: "text",
     placeholder: "예: 00대학교 00학과"
   },
   {
-    id: 9,
-    text: "9.현재 직업 또는 직업종 분야를 작성해 주세요\n*4대보험 이력이 높을수록 확률이 좋습니다\n\n예:00업 00팀.부서",
+    id: 11,
+    text: "11.현재 직업 또는 직업종 분야를 작성해 주세요\n*4대보험 이력이 높을수록 확률이 좋습니다\n\n예:00업 00팀.부서",
     options: [],
     category: "직업",
     inputType: "text",
     placeholder: "예: IT업 개발팀"
   },
   {
-    id: 10,
-    text: "10.성함을 작성해주세요\n\n예:홍길동",
+    id: 12,
+    text: "12.성함을 작성해주세요\n\n예:홍길동",
     options: [],
     category: "성함",
     inputType: "text",
     placeholder: "예: 홍길동"
   },
   {
-    id: 11,
-    text: "마지막.인증가능한 휴대폰 번호를 입력해주세요.\n답변 검토 후 문자로 결과발표 안내드린 후 추가상담을 원하는 분에 한하여 무료 유선 상담 진행 가능합니다.",
+    id: 13,
+    text: "13.기존대출내역 작성해주세요(기관,금액,연도별)",
+    options: [],
+    category: "기존대출내역",
+    inputType: "textarea",
+    placeholder: "예: OO은행 OOO만원 2023년 / …",
+    maxLength: 500
+  },
+  {
+    id: 14,
+    text: "14.인증가능한 휴대폰 번호를 입력해주세요.\n답변 검토 후 문자로 결과발표 안내드린 후 추가상담을 원하는 분에 한하여 무료 유선 상담 진행 가능합니다.",
     options: [],
     category: "휴대폰번호",
     inputType: "phone"
@@ -188,8 +217,10 @@ function showQuestion() {
   // 휴대폰번호 입력인 경우 특별한 UI 생성
   if (question.inputType === 'phone') {
     createPhoneInputUI();
+  } else if (question.inputType === 'textarea') {
+    createTextInputUI(question);
   } else if (question.inputType === 'text') {
-    createTextInputUI(question.placeholder || '내용을 입력하세요');
+    createTextInputUI(question);
   } else {
     // 일반 옵션 버튼들 생성
     question.options.forEach((option, index) => {
@@ -291,43 +322,70 @@ function appendUserMessageBubble(text) {
   });
 }
 
-// 공통 텍스트 입력 UI 생성
-function createTextInputUI(placeholder) {
+// 공통 텍스트·장문 입력 UI 생성 (question: placeholder, maxLength, inputType)
+function createTextInputUI(question) {
+  const placeholder = question.placeholder || '내용을 입력하세요';
+  const maxLength = question.maxLength != null ? question.maxLength : 80;
+  const isTextarea = question.inputType === 'textarea';
+
   const container = document.createElement('div');
   container.className = 'space-y-3';
-  container.innerHTML = `
-    <div class="relative">
-      <input 
-        type="text" 
-        id="text-input" 
-        placeholder="${placeholder}" 
-        class="w-full px-4 py-3 rounded-sm bg-card border border-border text-white placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-        maxlength="80"
-      />
-      <button 
-        id="text-submit-btn" 
-        class="text-input-btn absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 px-3 py-2 text-sm"
-      >
-        확인
-      </button>
-    </div>
-  `;
-  
+
+  if (isTextarea) {
+    container.innerHTML = `
+      <div class="relative space-y-2">
+        <textarea
+          id="text-input"
+          rows="4"
+          placeholder="${placeholder}"
+          class="w-full px-4 py-3 rounded-sm bg-card border border-border text-white placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200 resize-y min-h-[100px]"
+          maxlength="${maxLength}"
+        ></textarea>
+        <div class="flex justify-end">
+          <button
+            id="text-submit-btn"
+            class="text-input-btn px-4 py-2 text-sm rounded-sm"
+          >
+            확인
+          </button>
+        </div>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="relative">
+        <input
+          type="text"
+          id="text-input"
+          placeholder="${placeholder}"
+          class="w-full px-4 py-3 rounded-sm bg-card border border-border text-white placeholder-gray-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+          maxlength="${maxLength}"
+        />
+        <button
+          id="text-submit-btn"
+          class="text-input-btn absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 px-3 py-2 text-sm"
+        >
+          확인
+        </button>
+      </div>
+    `;
+  }
+
   answerOptions.appendChild(container);
-  
+
   const input = document.getElementById('text-input');
   const submitBtn = document.getElementById('text-submit-btn');
-  
-  // Enter 키 제출
-  input.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      submitBtn.click();
-    }
-  });
-  
-  // 버튼 제출
-  submitBtn.addEventListener('click', function() {
+
+  if (!isTextarea) {
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitBtn.click();
+      }
+    });
+  }
+
+  submitBtn.addEventListener('click', function () {
     const value = input.value.trim();
     if (!value) {
       alert('내용을 입력해주세요.');
@@ -335,11 +393,17 @@ function createTextInputUI(placeholder) {
     }
     handleAnswer(value);
   });
-  
-  // 포커스 자동 설정
+
   setTimeout(() => {
     input.focus();
   }, 100);
+}
+
+function getAnswerTextByCategory(category) {
+  const idx = questions.findIndex((q) => q.category === category);
+  if (idx === -1) return '';
+  const a = answers[idx];
+  return (a && a.text) ? a.text : '';
 }
 
 // 휴대폰번호 입력 UI 생성
@@ -701,7 +765,7 @@ async function generateConsultationResult() {
     
     console.log('=== API 요청 데이터 ===');
     console.log('전체 requestData:', JSON.stringify(requestData, null, 2));
-    console.log('질문 5번 답변:', requestData.answers.find(a => a.questionId === 5));
+    console.log('질문 6번(신용점수) 답변:', requestData.answers.find(a => a.questionId === 6));
     console.log('answers 객체:', answers);
     
     const response = await fetch('/api/generate-result', {
@@ -735,83 +799,94 @@ async function generateConsultationResult() {
 
 // 기본 결과 계산 (API 실패 시 사용)
 function calculateDefaultResult() {
+  const txt = (i) => (answers[i] && answers[i].text) ? answers[i].text : '';
+  const idx = (i) => (answers[i] && typeof answers[i].index === 'number') ? answers[i].index : null;
+
   let supportAmountMin = 5000;
   let supportAmountMax = 10000;
-  let loanSupportProbability = 0; // 기본값 없음
+  let loanSupportProbability = 0;
   let recommendedProducts = ['정부지원사업', '창업자금지원', '기술개발지원'];
-  
-  // 답변에 따른 조건 조정
-  const businessStatus = answers[0];
-  if (businessStatus?.includes('사업자 등록 한적없습니다')) {
+
+  const businessStatus = txt(0);
+  if (businessStatus.includes('사업자 등록 한적없습니다')) {
     supportAmountMin = 3000;
     supportAmountMax = 5000;
     recommendedProducts = ['예비창업자 지원사업', '스타트업 지원', '정부지원사업'];
-  } else if (businessStatus?.includes('3년 미만')) {
+  } else if (businessStatus.includes('3년 미만')) {
     supportAmountMin = 5000;
     supportAmountMax = 10000;
     recommendedProducts = ['초기창업자 지원', '정부지원사업', '기술개발지원'];
-  } else if (businessStatus?.includes('3년 이상')) {
+  } else if (businessStatus.includes('3년 이상')) {
     supportAmountMin = 3000;
     supportAmountMax = 8000;
     recommendedProducts = ['기존사업자 지원', '정부지원사업', '기술혁신지원'];
   }
-  
-  const supportExperience = answers[1];
-  if (supportExperience?.includes('지원경험 있습니다') || supportExperience?.includes('합격해서 지원금 받은적이 있습니다')) {
+
+  const supportExperience = txt(1);
+  if (supportExperience.includes('지원경험 있습니다') || supportExperience.includes('합격해서 지원금 받은적이 있습니다')) {
     supportAmountMax += 2000;
   }
-  
-  const businessItem = answers[2];
-  if (businessItem?.includes('생각하고있는 아이템 있습니다')) {
+
+  const businessItem = txt(2);
+  if (businessItem.includes('생각하고있는 아이템 있습니다')) {
     recommendedProducts.push('아이템개발지원');
   }
-  
-  const region = answers[3];
-  if (region?.includes('제주') || region?.includes('강원')) {
+
+  const region = txt(4);
+  if (region.includes('제주') || region.includes('강원')) {
     // 지역균형발전 우대
   }
-  
-  // 대출이력에 따른 지원확률 계산
-  const loanHistory = answers[4];
-  console.log('대출이력 답변:', loanHistory); // 디버깅용
-  
-  // 정확한 매칭 - 순서가 중요함
-  if (loanHistory && loanHistory.includes('총5천만원 이상') && loanHistory.includes('1억원 미만')) {
-    loanSupportProbability = 80;
-  } else if (loanHistory && loanHistory.includes('총3천만원 이상') && loanHistory.includes('5천만원 미만')) {
-    loanSupportProbability = 85;
-  } else if (loanHistory && loanHistory.includes('총1천만원 이상') && loanHistory.includes('3천만원 미만')) {
-    loanSupportProbability = 90;
-  } else if (loanHistory && loanHistory.includes('총1억원 이상')) {
-    loanSupportProbability = 70;
-  } else if (loanHistory && loanHistory.includes('총1천만원 미만')) {
-    loanSupportProbability = 95;
-  } else {
-    console.log('대출이력 매칭 실패:', loanHistory); // 디버깅용
+
+  // 신용점수 구간(answerIndex 0~4) 기준 지원확률
+  const creditTier = idx(5);
+  if (creditTier === 0) loanSupportProbability = 65;
+  else if (creditTier === 1) loanSupportProbability = 75;
+  else if (creditTier === 2) loanSupportProbability = 85;
+  else if (creditTier === 3) loanSupportProbability = 90;
+  else if (creditTier === 4) loanSupportProbability = 95;
+  else {
+    const creditText = txt(5);
+    if (creditText.includes('500')) loanSupportProbability = 65;
+    else if (creditText.includes('600')) loanSupportProbability = 75;
+    else if (creditText.includes('700')) loanSupportProbability = 85;
+    else if (creditText.includes('800')) loanSupportProbability = 90;
+    else if (creditText.includes('900')) loanSupportProbability = 95;
   }
-  
-  console.log('대출 지원확률:', loanSupportProbability); // 디버깅용
-  
-  const gender = answers[5];
-  if (gender?.includes('여성')) {
+
+  if (txt(3).includes('체납이 있습니다.') && !txt(3).includes('상환가능')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 15);
+  } else if (txt(3).includes('상환가능')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 5);
+  }
+
+  if (txt(8).includes('네.있습니다')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 20);
+  } else if (txt(8).includes('3년 넘었습니다')) {
+    loanSupportProbability = Math.max(0, loanSupportProbability - 5);
+  }
+
+  if (loanSupportProbability === 0) loanSupportProbability = 80;
+
+  const gender = txt(6);
+  if (gender.includes('여성')) {
     recommendedProducts.push('여성창업지원');
   }
-  
-  const age = answers[6];
-  if (age?.includes('만39세이하')) {
+
+  const age = txt(7);
+  if (age.includes('이하')) {
     recommendedProducts.push('청년창업지원');
   }
-  
-  const education = answers[7];
-  if (education?.includes('대학원 졸업')) {
+
+  const education = txt(9);
+  if (education.includes('대학원')) {
     recommendedProducts.push('고학력창업지원');
   }
-  
-  const job = answers[8];
-  if (job?.includes('IT업') || job?.includes('기술직')) {
+
+  const job = txt(10);
+  if (job.includes('IT업') || job.includes('기술직')) {
     recommendedProducts.push('IT기술지원');
   }
-  
+
   return {
     supportAmountMin,
     supportAmountMax,
@@ -879,8 +954,8 @@ function hideModal(modalId) {
 // 상담 예약 처리
 async function handleBookConsultation() {
   // 대화에서 이미 받은 정보 사용
-  const name = (answers[9] && answers[9].text) || '고객'; // 질문 10번: 성함
-  const phone = (answers[10] && answers[10].text) || ''; // 질문 11번: 휴대폰번호
+  const name = getAnswerTextByCategory('성함') || '고객';
+  const phone = getAnswerTextByCategory('휴대폰번호') || '';
   
   if (!phone) {
     showErrorModal('휴대폰번호 정보가 없습니다. 다시 시작해주세요.');
